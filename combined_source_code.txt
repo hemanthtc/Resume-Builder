@@ -1,0 +1,4860 @@
+================================================================================
+FILE: package.json
+================================================================================
+{
+  "name": "resume-builder",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lucide-react": "^1.22.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.3",
+    "oxlint": "^1.71.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.1.1"
+  }
+}
+
+
+================================================================================
+FILE: vite.config.ts
+================================================================================
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+})
+
+
+================================================================================
+FILE: tsconfig.json
+================================================================================
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}
+
+
+================================================================================
+FILE: tsconfig.app.json
+================================================================================
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "es2023",
+    "lib": ["ES2023", "DOM"],
+    "module": "esnext",
+    "types": ["vite/client"],
+    "allowArbitraryExtensions": true,
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src"]
+}
+
+
+================================================================================
+FILE: tsconfig.node.json
+================================================================================
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "target": "es2023",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "module": "nodenext",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Linting */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["vite.config.ts"]
+}
+
+
+================================================================================
+FILE: index.html
+================================================================================
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Premium Resume Builder Pro | Create, Edit, & Export Perfect CVs</title>
+    <meta name="description" content="Build professional resumes and CVs online. Choose from 40 prebuilt modern, creative, and technical templates, customize themes and fonts, and edit details directly in real-time." />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+
+================================================================================
+FILE: .gitignore
+================================================================================
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+
+================================================================================
+FILE: src/App.css
+================================================================================
+.counter {
+  font-size: 16px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+  margin-bottom: 24px;
+
+  &:hover {
+    border-color: var(--accent-border);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.hero {
+  position: relative;
+
+  .base,
+  .framework,
+  .vite {
+    inset-inline: 0;
+    margin: 0 auto;
+  }
+
+  .base {
+    width: 170px;
+    position: relative;
+    z-index: 0;
+  }
+
+  .framework,
+  .vite {
+    position: absolute;
+  }
+
+  .framework {
+    z-index: 1;
+    top: 34px;
+    height: 28px;
+    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
+      scale(1.4);
+  }
+
+  .vite {
+    z-index: 0;
+    top: 107px;
+    height: 26px;
+    width: auto;
+    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
+      scale(0.8);
+  }
+}
+
+#center {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  place-content: center;
+  place-items: center;
+  flex-grow: 1;
+
+  @media (max-width: 1024px) {
+    padding: 32px 20px 24px;
+    gap: 18px;
+  }
+}
+
+#next-steps {
+  display: flex;
+  border-top: 1px solid var(--border);
+  text-align: left;
+
+  & > div {
+    flex: 1 1 0;
+    padding: 32px;
+    @media (max-width: 1024px) {
+      padding: 24px 20px;
+    }
+  }
+
+  .icon {
+    margin-bottom: 16px;
+    width: 22px;
+    height: 22px;
+  }
+
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+#docs {
+  border-right: 1px solid var(--border);
+
+  @media (max-width: 1024px) {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+#next-steps ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 8px;
+  margin: 32px 0 0;
+
+  .logo {
+    height: 18px;
+  }
+
+  a {
+    color: var(--text-h);
+    font-size: 16px;
+    border-radius: 6px;
+    background: var(--social-bg);
+    display: flex;
+    padding: 6px 12px;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: box-shadow 0.3s;
+
+    &:hover {
+      box-shadow: var(--shadow);
+    }
+    .button-icon {
+      height: 18px;
+      width: 18px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    margin-top: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    li {
+      flex: 1 1 calc(50% - 8px);
+    }
+
+    a {
+      width: 100%;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+  }
+}
+
+#spacer {
+  height: 88px;
+  border-top: 1px solid var(--border);
+  @media (max-width: 1024px) {
+    height: 48px;
+  }
+}
+
+.ticks {
+  position: relative;
+  width: 100%;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: -4.5px;
+    border: 5px solid transparent;
+  }
+
+  &::before {
+    left: 0;
+    border-left-color: var(--border);
+  }
+  &::after {
+    right: 0;
+    border-right-color: var(--border);
+  }
+}
+
+
+================================================================================
+FILE: src/App.tsx
+================================================================================
+import { useState } from 'react';
+import { initialResumeData } from './data/initialData';
+import { TEMPLATES } from './data/templates';
+import type { ResumeData, ResumeStyle, ResumeTemplate } from './types/resume';
+import { TemplateSelector } from './components/TemplateSelector';
+import { StyleCustomizer } from './components/StyleCustomizer';
+import { ResumeForm } from './components/ResumeForm';
+import { ResumePreview } from './components/ResumePreview';
+import './styles/App.css';
+import { 
+  FileText, Palette, Sliders, Printer, RotateCcw, Download, Upload, ZoomIn, ZoomOut, Check, Info, AlertTriangle
+} from 'lucide-react';
+
+function App() {
+  const [resumeData, setResumeData] = useState<ResumeData>(initialResumeData);
+  const [activeTemplateId, setActiveTemplateId] = useState<string>(TEMPLATES[0].id);
+  const [currentStyle, setCurrentStyle] = useState<ResumeStyle>(TEMPLATES[0].style);
+  
+  const [activeTab, setActiveTab] = useState<'form' | 'templates' | 'style'>('form');
+  const [zoom, setZoom] = useState<number>(0.9); // zoom level 0.7 - 1.2
+  const [showPrintGuide, setShowPrintGuide] = useState<boolean>(false);
+  const [showSuccessToast, setShowSuccessToast] = useState<string | null>(null);
+
+  // Apply a prebuilt template
+  const handleSelectTemplate = (template: ResumeTemplate) => {
+    setActiveTemplateId(template.id);
+    setCurrentStyle(template.style);
+    triggerToast(`Applied template: "${template.name}"`);
+  };
+
+  // Toast notifier
+  const triggerToast = (msg: string) => {
+    setShowSuccessToast(msg);
+    setTimeout(() => {
+      setShowSuccessToast(null);
+    }, 3000);
+  };
+
+  // Trigger browser print dialog
+  const handlePrint = () => {
+    setShowPrintGuide(false);
+    // Short timeout to allow modal animation to clear
+    setTimeout(() => {
+      window.print();
+    }, 300);
+  };
+
+  // Reset to initial mock data
+  const handleReset = () => {
+    if (window.confirm("Are you sure you want to reset the resume back to the default profile? All your edits will be lost.")) {
+      setResumeData(initialResumeData);
+      setActiveTemplateId(TEMPLATES[0].id);
+      setCurrentStyle(TEMPLATES[0].style);
+      triggerToast("Reset to default profile data");
+    }
+  };
+
+  // Back up data to JSON
+  const handleExportJSON = () => {
+    const exportState = {
+      data: resumeData,
+      style: currentStyle,
+      templateId: activeTemplateId
+    };
+    const blob = new Blob([JSON.stringify(exportState, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `resume-backup-${resumeData.personalInfo.name.toLowerCase().replace(/\s+/g, '-')}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    triggerToast("Backup JSON file downloaded");
+  };
+
+  // Restore data from JSON
+  const handleImportJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const parsed = JSON.parse(event.target?.result as string);
+          if (parsed.data && parsed.style) {
+            setResumeData(parsed.data);
+            setCurrentStyle(parsed.style);
+            if (parsed.templateId) {
+              setActiveTemplateId(parsed.templateId);
+            }
+            triggerToast("Resume details restored successfully!");
+          } else {
+            alert("Error: Invalid backup file format. Missing data or style configuration.");
+          }
+        } catch (err) {
+          alert("Failed to parse the backup file: " + err);
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  return (
+    <div className="app-container">
+      {/* 1. LEFT SIDEBAR PANEL */}
+      <aside className="sidebar-panel no-print">
+        {/* Navigation / Branding */}
+        <div className="nav-header">
+          <div className="brand">
+            <FileText className="brand-icon" size={20} />
+            <h1>Resume Builder Pro</h1>
+          </div>
+          <div className="nav-actions">
+            <button 
+              className="btn btn-primary" 
+              onClick={() => setShowPrintGuide(true)}
+              title="Download as PDF / Print"
+            >
+              <Printer size={15} />
+              <span>Export PDF</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Tab Controllers */}
+        <nav className="panel-tabs">
+          <button 
+            className={`tab-btn ${activeTab === 'form' ? 'active' : ''}`}
+            onClick={() => setActiveTab('form')}
+          >
+            <FileText size={15} />
+            <span>Content</span>
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'templates' ? 'active' : ''}`}
+            onClick={() => setActiveTab('templates')}
+          >
+            <Palette size={15} />
+            <span>Templates</span>
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'style' ? 'active' : ''}`}
+            onClick={() => setActiveTab('style')}
+          >
+            <Sliders size={15} />
+            <span>Customize</span>
+          </button>
+        </nav>
+
+        {/* Tab Content Panel */}
+        <div className="panel-content">
+          {activeTab === 'form' && (
+            <ResumeForm 
+              data={resumeData} 
+              onChangeData={setResumeData} 
+            />
+          )}
+
+          {activeTab === 'templates' && (
+            <TemplateSelector
+              activeTemplateId={activeTemplateId}
+              onSelectTemplate={handleSelectTemplate}
+            />
+          )}
+
+          {activeTab === 'style' && (
+            <StyleCustomizer 
+              style={currentStyle} 
+              onChangeStyle={setCurrentStyle} 
+            />
+          )}
+        </div>
+
+        {/* Bottom Control Bar */}
+        <div style={{
+          padding: '0.85rem 1.25rem',
+          borderTop: '1px solid var(--panel-border)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          background: 'rgba(0,0,0,0.15)'
+        }}>
+          <button 
+            className="btn btn-secondary" 
+            onClick={handleReset} 
+            title="Reset default values"
+            style={{ padding: '0.35rem 0.6rem' }}
+          >
+            <RotateCcw size={13} />
+            <span>Reset</span>
+          </button>
+
+          <div style={{ display: 'flex', gap: '0.35rem' }}>
+            <input 
+              type="file" 
+              id="json-import-file" 
+              accept=".json"
+              onChange={handleImportJSON} 
+              style={{ display: 'none' }}
+            />
+            <button 
+              className="btn btn-secondary" 
+              onClick={() => document.getElementById('json-import-file')?.click()}
+              title="Restore from JSON backup file"
+              style={{ padding: '0.35rem 0.6rem' }}
+            >
+              <Upload size={13} />
+              <span>Import</span>
+            </button>
+            <button 
+              className="btn btn-secondary" 
+              onClick={handleExportJSON}
+              title="Backup details to JSON file"
+              style={{ padding: '0.35rem 0.6rem' }}
+            >
+              <Download size={13} />
+              <span>Export</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* 2. RIGHT PREVIEW CANVAS */}
+      <main className="preview-canvas-container">
+        
+        {/* Floating Zoom and Tip Controllers */}
+        <div className="no-print" style={{
+          position: 'absolute',
+          top: '1rem',
+          right: '1.5rem',
+          display: 'flex',
+          gap: '0.5rem',
+          zIndex: 5,
+          alignItems: 'center'
+        }}>
+          <div style={{
+            background: 'rgba(15, 23, 42, 0.85)',
+            border: '1px solid var(--panel-border)',
+            padding: '0.3rem 0.5rem',
+            borderRadius: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}>
+            <button 
+              className="btn-icon" 
+              onClick={() => setZoom(Math.max(0.6, zoom - 0.05))} 
+              style={{ padding: '0.2rem', background: 'transparent', border: 'none' }}
+            >
+              <ZoomOut size={14} />
+            </button>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-main)', minWidth: '35px', textAlign: 'center' }}>
+              {Math.round(zoom * 100)}%
+            </span>
+            <button 
+              className="btn-icon" 
+              onClick={() => setZoom(Math.min(1.2, zoom + 0.05))}
+              style={{ padding: '0.2rem', background: 'transparent', border: 'none' }}
+            >
+              <ZoomIn size={14} />
+            </button>
+          </div>
+          
+          <div style={{
+            background: 'rgba(15, 23, 42, 0.85)',
+            border: '1px solid var(--panel-border)',
+            padding: '0.4rem 0.6rem',
+            borderRadius: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            color: 'var(--text-muted)',
+            fontSize: '0.7rem'
+          }}>
+            <Info size={12} className="brand-icon" />
+            <span>Click any text directly on the page to edit inline!</span>
+          </div>
+        </div>
+
+        {/* Scaled paper sheets */}
+        <div style={{
+          minHeight: `${1123 * zoom}px`,
+          width: `${794 * zoom}px`,
+          transform: `scale(${zoom})`,
+          transformOrigin: 'top center',
+          transition: 'transform 0.15s ease',
+          boxSizing: 'border-box'
+        }}>
+          <ResumePreview 
+            data={resumeData}
+            style={currentStyle}
+            onChangeData={setResumeData}
+          />
+        </div>
+
+        {/* Success Alert Toast Notification */}
+        {showSuccessToast && (
+          <div style={{
+            position: 'fixed',
+            bottom: '1.5rem',
+            right: '1.5rem',
+            background: '#10b981',
+            color: 'white',
+            padding: '0.6rem 1.2rem',
+            borderRadius: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+            zIndex: 100,
+            fontSize: '0.85rem',
+            fontWeight: 500
+          }}>
+            <Check size={14} />
+            <span>{showSuccessToast}</span>
+          </div>
+        )}
+
+        {/* PRINT / PDF DOWNLOAD HELP MODAL */}
+        {showPrintGuide && (
+          <>
+            <div className="modal-backdrop" onClick={() => setShowPrintGuide(false)} />
+            <div className="print-helper-modal">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: '#60a5fa' }}>
+                <Printer size={18} />
+                <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: 'var(--text-main)' }}>PDF Export Guide</h3>
+              </div>
+              
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                <p style={{ margin: 0 }}>To print or download your resume as a clean, pixel-perfect PDF document, verify these settings in the browser print window:</p>
+                
+                <ol style={{ paddingLeft: '1.25rem', margin: '0.25rem 0', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                  <li>Set <strong>Destination</strong> to <strong>Save as PDF</strong> (or Microsoft Print to PDF).</li>
+                  <li>Click <strong>More settings</strong> to expand configuration options.</li>
+                  <li>Ensure <strong>Background graphics</strong> is checked <span style={{ color: '#f59e0b', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '2px' }}><AlertTriangle size={10} />(Required for color themes!)</span></li>
+                  <li>Set <strong>Margins</strong> to <strong>None</strong> or <strong>Default</strong>.</li>
+                  <li>Set <strong>Paper size</strong> to <strong>A4</strong> (or Letter) to match the template aspect ratio.</li>
+                  <li>Untick <strong>Headers and footers</strong> to remove the browser date/URL timestamps from the page edges.</li>
+                </ol>
+
+                <p style={{ margin: 0, fontStyle: 'italic', fontSize: '0.75rem', background: 'rgba(255,255,255,0.02)', padding: '0.4rem', borderLeft: '2px solid #ef4444' }}>
+                  Note: Any editing outlines or control bars will automatically be stripped from the printed page.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.25rem' }}>
+                <button className="btn btn-secondary" onClick={() => setShowPrintGuide(false)}>Cancel</button>
+                <button className="btn btn-primary" onClick={handlePrint}>Open Print Dialog</button>
+              </div>
+            </div>
+          </>
+        )}
+
+      </main>
+    </div>
+  );
+}
+
+export default App;
+
+
+================================================================================
+FILE: src/components/ResumeForm.tsx
+================================================================================
+import React, { useState } from 'react';
+import type { ResumeData, WorkExperience, Education, Skill, Language, Certification } from '../types/resume';
+import { 
+  User, Briefcase, GraduationCap, Code, Globe, Award, Plus, Trash2, ArrowUp, ArrowDown, ChevronDown, ChevronUp, Image as ImageIcon 
+} from 'lucide-react';
+
+interface ResumeFormProps {
+  data: ResumeData;
+  onChangeData: (updatedData: ResumeData) => void;
+}
+
+export const ResumeForm: React.FC<ResumeFormProps> = ({ data, onChangeData }) => {
+  const [expandedSection, setExpandedSection] = useState<string | null>('personal');
+
+  const toggleSection = (section: string) => {
+    setExpandedSection(expandedSection === section ? null : section);
+  };
+
+  // Helper to update personal info fields
+  const handlePersonalChange = (field: keyof typeof data.personalInfo, value: string) => {
+    onChangeData({
+      ...data,
+      personalInfo: {
+        ...data.personalInfo,
+        [field]: value
+      }
+    });
+  };
+
+  // Profile Picture Upload Handler (converts to base64)
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          handlePersonalChange('avatar', reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeAvatar = () => {
+    handlePersonalChange('avatar', '');
+  };
+
+  // Generic List update functions
+  const updateListField = <K extends keyof Omit<ResumeData, 'personalInfo' | 'customSections'>>(
+    section: K,
+    id: string,
+    field: string,
+    value: any
+  ) => {
+    const updatedList = (data[section] as any[]).map(item => 
+      item.id === id ? { ...item, [field]: value } : item
+    );
+    onChangeData({
+      ...data,
+      [section]: updatedList
+    });
+  };
+
+  const addListItem = <K extends keyof Omit<ResumeData, 'personalInfo' | 'customSections'>>(
+    section: K,
+    newItemTemplate: any
+  ) => {
+    onChangeData({
+      ...data,
+      [section]: [...(data[section] as any[]), { ...newItemTemplate, id: `${section}-${Date.now()}` }]
+    });
+  };
+
+  const removeListItem = <K extends keyof Omit<ResumeData, 'personalInfo' | 'customSections'>>(
+    section: K,
+    id: string
+  ) => {
+    onChangeData({
+      ...data,
+      [section]: (data[section] as any[]).filter(item => item.id !== id)
+    });
+  };
+
+  const reorderListItem = <K extends keyof Omit<ResumeData, 'personalInfo' | 'customSections'>>(
+    section: K,
+    index: number,
+    direction: 'up' | 'down'
+  ) => {
+    const list = [...(data[section] as any[])];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex >= 0 && targetIndex < list.length) {
+      const temp = list[index];
+      list[index] = list[targetIndex];
+      list[targetIndex] = temp;
+      onChangeData({
+        ...data,
+        [section]: list
+      });
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+      
+      {/* 1. PERSONAL DETAILS ACCORDION */}
+      <div className="accordion-item">
+        <button className="accordion-header" onClick={() => toggleSection('personal')}>
+          <div className="accordion-header-left">
+            <User size={16} />
+            <span>Personal Information</span>
+          </div>
+          {expandedSection === 'personal' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+
+        {expandedSection === 'personal' && (
+          <div className="accordion-content">
+            <div className="avatar-input-wrapper">
+              <div className="avatar-preview-circle">
+                {data.personalInfo.avatar ? (
+                  <img src={data.personalInfo.avatar} alt="Avatar Preview" />
+                ) : (
+                  <ImageIcon size={20} style={{ color: 'var(--text-muted)' }} />
+                )}
+              </div>
+              <div className="avatar-actions">
+                <input
+                  type="file"
+                  id="avatar-upload"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                  style={{ display: 'none' }}
+                />
+                <button 
+                  className="btn btn-secondary" 
+                  onClick={() => document.getElementById('avatar-upload')?.click()}
+                  style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem' }}
+                >
+                  Upload Photo
+                </button>
+                {data.personalInfo.avatar && (
+                  <button 
+                    className="list-item-btn btn-delete" 
+                    onClick={removeAvatar}
+                    style={{ fontSize: '0.7rem', padding: '0.15rem' }}
+                  >
+                    Remove Photo
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Full Name</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={data.personalInfo.name}
+                  onChange={(e) => handlePersonalChange('name', e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Professional Title</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={data.personalInfo.title}
+                  onChange={(e) => handlePersonalChange('title', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Email Address</label>
+                <input
+                  type="email"
+                  className="form-input"
+                  value={data.personalInfo.email}
+                  onChange={(e) => handlePersonalChange('email', e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Phone Number</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={data.personalInfo.phone}
+                  onChange={(e) => handlePersonalChange('phone', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Location (City, State)</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={data.personalInfo.location}
+                  onChange={(e) => handlePersonalChange('location', e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Website / Portfolio</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={data.personalInfo.website}
+                  onChange={(e) => handlePersonalChange('website', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">LinkedIn URL</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={data.personalInfo.linkedin}
+                  onChange={(e) => handlePersonalChange('linkedin', e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">GitHub URL</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={data.personalInfo.github}
+                  onChange={(e) => handlePersonalChange('github', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label className="form-label">Professional Summary</label>
+              <textarea
+                className="form-input"
+                value={data.personalInfo.summary}
+                onChange={(e) => handlePersonalChange('summary', e.target.value)}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 2. WORK EXPERIENCE ACCORDION */}
+      <div className="accordion-item">
+        <button className="accordion-header" onClick={() => toggleSection('experience')}>
+          <div className="accordion-header-left">
+            <Briefcase size={16} />
+            <span>Work Experience</span>
+          </div>
+          {expandedSection === 'experience' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+
+        {expandedSection === 'experience' && (
+          <div className="accordion-content">
+            {data.workExperience.map((exp, index) => (
+              <div key={exp.id} className="list-item-card">
+                <div className="list-item-header">
+                  <span className="list-item-title">{exp.position || 'Untitled Role'} at {exp.company || 'New Company'}</span>
+                  <div className="list-item-actions">
+                    <button 
+                      className="list-item-btn" 
+                      onClick={() => reorderListItem('workExperience', index, 'up')}
+                      disabled={index === 0}
+                    >
+                      <ArrowUp size={14} />
+                    </button>
+                    <button 
+                      className="list-item-btn" 
+                      onClick={() => reorderListItem('workExperience', index, 'down')}
+                      disabled={index === data.workExperience.length - 1}
+                    >
+                      <ArrowDown size={14} />
+                    </button>
+                    <button 
+                      className="list-item-btn btn-delete" 
+                      onClick={() => removeListItem('workExperience', exp.id)}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Company</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={exp.company}
+                      onChange={(e) => updateListField('workExperience', exp.id, 'company', e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Position / Job Title</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={exp.position}
+                      onChange={(e) => updateListField('workExperience', exp.id, 'position', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Start Date</label>
+                    <input
+                      type="month"
+                      className="form-input"
+                      value={exp.startDate}
+                      onChange={(e) => updateListField('workExperience', exp.id, 'startDate', e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">End Date</label>
+                    <input
+                      type="month"
+                      className="form-input"
+                      value={exp.endDate}
+                      disabled={exp.current}
+                      onChange={(e) => updateListField('workExperience', exp.id, 'endDate', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <input
+                    type="checkbox"
+                    id={`current-exp-${exp.id}`}
+                    checked={exp.current}
+                    onChange={(e) => {
+                      updateListField('workExperience', exp.id, 'current', e.target.checked);
+                      if (e.target.checked) updateListField('workExperience', exp.id, 'endDate', '');
+                    }}
+                  />
+                  <label htmlFor={`current-exp-${exp.id}`} className="form-label" style={{ margin: 0, cursor: 'pointer' }}>
+                    I currently work here
+                  </label>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Location</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={exp.location}
+                    onChange={(e) => updateListField('workExperience', exp.id, 'location', e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Description & Bullet Points</label>
+                  <textarea
+                    className="form-input"
+                    value={exp.description}
+                    placeholder="• Did action...&#10;• Accomplished Y..."
+                    onChange={(e) => updateListField('workExperience', exp.id, 'description', e.target.value)}
+                  />
+                </div>
+              </div>
+            ))}
+
+            <button 
+              className="btn-add"
+              onClick={() => addListItem('workExperience', { company: '', position: '', location: '', startDate: '', endDate: '', current: false, description: '' } as WorkExperience)}
+            >
+              <Plus size={14} />
+              <span>Add Experience</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* 3. EDUCATION ACCORDION */}
+      <div className="accordion-item">
+        <button className="accordion-header" onClick={() => toggleSection('education')}>
+          <div className="accordion-header-left">
+            <GraduationCap size={16} />
+            <span>Education</span>
+          </div>
+          {expandedSection === 'education' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+
+        {expandedSection === 'education' && (
+          <div className="accordion-content">
+            {data.education.map((edu, index) => (
+              <div key={edu.id} className="list-item-card">
+                <div className="list-item-header">
+                  <span className="list-item-title">{edu.degree || 'New Degree'} in {edu.fieldOfStudy || 'New Field'}</span>
+                  <div className="list-item-actions">
+                    <button 
+                      className="list-item-btn" 
+                      onClick={() => reorderListItem('education', index, 'up')}
+                      disabled={index === 0}
+                    >
+                      <ArrowUp size={14} />
+                    </button>
+                    <button 
+                      className="list-item-btn" 
+                      onClick={() => reorderListItem('education', index, 'down')}
+                      disabled={index === data.education.length - 1}
+                    >
+                      <ArrowDown size={14} />
+                    </button>
+                    <button 
+                      className="list-item-btn btn-delete" 
+                      onClick={() => removeListItem('education', edu.id)}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Institution / School</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={edu.institution}
+                    onChange={(e) => updateListField('education', edu.id, 'institution', e.target.value)}
+                  />
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Degree (e.g. B.S., M.A.)</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={edu.degree}
+                      onChange={(e) => updateListField('education', edu.id, 'degree', e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Field of Study</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={edu.fieldOfStudy}
+                      onChange={(e) => updateListField('education', edu.id, 'fieldOfStudy', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Start Date</label>
+                    <input
+                      type="month"
+                      className="form-input"
+                      value={edu.startDate}
+                      onChange={(e) => updateListField('education', edu.id, 'startDate', e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">End/Graduation Date</label>
+                    <input
+                      type="month"
+                      className="form-input"
+                      value={edu.endDate}
+                      onChange={(e) => updateListField('education', edu.id, 'endDate', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">GPA / Honors</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={edu.gpa}
+                      placeholder="e.g. 3.9 / 4.0"
+                      onChange={(e) => updateListField('education', edu.id, 'gpa', e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Location</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={edu.location}
+                      onChange={(e) => updateListField('education', edu.id, 'location', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Additional Description</label>
+                  <textarea
+                    className="form-input"
+                    value={edu.description}
+                    onChange={(e) => updateListField('education', edu.id, 'description', e.target.value)}
+                  />
+                </div>
+              </div>
+            ))}
+
+            <button 
+              className="btn-add"
+              onClick={() => addListItem('education', { institution: '', degree: '', fieldOfStudy: '', location: '', startDate: '', endDate: '', gpa: '', description: '' } as Education)}
+            >
+              <Plus size={14} />
+              <span>Add Education</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* 4. PROJECTS ACCORDION */}
+      <div className="accordion-item">
+        <button className="accordion-header" onClick={() => toggleSection('projects')}>
+          <div className="accordion-header-left">
+            <Code size={16} />
+            <span>Projects</span>
+          </div>
+          {expandedSection === 'projects' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+
+        {expandedSection === 'projects' && (
+          <div className="accordion-content">
+            {data.projects.map((proj, index) => (
+              <div key={proj.id} className="list-item-card">
+                <div className="list-item-header">
+                  <span className="list-item-title">{proj.name || 'Untitled Project'}</span>
+                  <div className="list-item-actions">
+                    <button 
+                      className="list-item-btn" 
+                      onClick={() => reorderListItem('projects', index, 'up')}
+                      disabled={index === 0}
+                    >
+                      <ArrowUp size={14} />
+                    </button>
+                    <button 
+                      className="list-item-btn" 
+                      onClick={() => reorderListItem('projects', index, 'down')}
+                      disabled={index === data.projects.length - 1}
+                    >
+                      <ArrowDown size={14} />
+                    </button>
+                    <button 
+                      className="list-item-btn btn-delete" 
+                      onClick={() => removeListItem('projects', proj.id)}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Project Name</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={proj.name}
+                      onChange={(e) => updateListField('projects', proj.id, 'name', e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Your Role</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={proj.role}
+                      placeholder="e.g. Lead Developer"
+                      onChange={(e) => updateListField('projects', proj.id, 'role', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Technologies (comma separated)</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={proj.technologies.join(', ')}
+                      placeholder="React, AWS, Node.js"
+                      onChange={(e) => {
+                        const arrayVal = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
+                        updateListField('projects', proj.id, 'technologies', arrayVal);
+                      }}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Project Link URL</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={proj.link}
+                      onChange={(e) => updateListField('projects', proj.id, 'link', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Description</label>
+                  <textarea
+                    className="form-input"
+                    value={proj.description}
+                    onChange={(e) => updateListField('projects', proj.id, 'description', e.target.value)}
+                  />
+                </div>
+              </div>
+            ))}
+
+            <button 
+              className="btn-add"
+              onClick={() => addListItem('projects', { name: '', role: '', technologies: [], link: '', description: '' } as any)}
+            >
+              <Plus size={14} />
+              <span>Add Project</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* 5. SKILLS ACCORDION */}
+      <div className="accordion-item">
+        <button className="accordion-header" onClick={() => toggleSection('skills')}>
+          <div className="accordion-header-left">
+            <Code size={16} />
+            <span>Skills</span>
+          </div>
+          {expandedSection === 'skills' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+
+        {expandedSection === 'skills' && (
+          <div className="accordion-content">
+            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 30px', gap: '0.4rem', fontWeight: 600, fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+              <span>Skill Name</span>
+              <span>Category</span>
+              <span>Level (Optional)</span>
+              <span></span>
+            </div>
+
+            {data.skills.map((skill) => (
+              <div key={skill.id} style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 30px', gap: '0.4rem', marginBottom: '0.4rem', alignItems: 'center' }}>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={skill.name}
+                  placeholder="TypeScript"
+                  onChange={(e) => updateListField('skills', skill.id, 'name', e.target.value)}
+                  style={{ padding: '0.35rem 0.5rem' }}
+                />
+                <input
+                  type="text"
+                  className="form-input"
+                  value={skill.category}
+                  placeholder="Languages"
+                  onChange={(e) => updateListField('skills', skill.id, 'category', e.target.value)}
+                  style={{ padding: '0.35rem 0.5rem' }}
+                />
+                <input
+                  type="text"
+                  className="form-input"
+                  value={skill.level}
+                  placeholder="Advanced"
+                  onChange={(e) => updateListField('skills', skill.id, 'level', e.target.value)}
+                  style={{ padding: '0.35rem 0.5rem' }}
+                />
+                <button 
+                  className="list-item-btn btn-delete" 
+                  onClick={() => removeListItem('skills', skill.id)}
+                  style={{ padding: '0.4rem' }}
+                >
+                  <Trash2 size={12} />
+                </button>
+              </div>
+            ))}
+
+            <button 
+              className="btn-add"
+              onClick={() => addListItem('skills', { name: '', category: '', level: '' } as Skill)}
+              style={{ marginTop: '0.5rem' }}
+            >
+              <Plus size={14} />
+              <span>Add Skill</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* 6. LANGUAGES ACCORDION */}
+      <div className="accordion-item">
+        <button className="accordion-header" onClick={() => toggleSection('languages')}>
+          <div className="accordion-header-left">
+            <Globe size={16} />
+            <span>Languages</span>
+          </div>
+          {expandedSection === 'languages' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+
+        {expandedSection === 'languages' && (
+          <div className="accordion-content">
+            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 30px', gap: '0.4rem', fontWeight: 600, fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+              <span>Language</span>
+              <span>Proficiency (e.g. Native, Fluent)</span>
+              <span></span>
+            </div>
+
+            {data.languages.map((lang) => (
+              <div key={lang.id} style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 30px', gap: '0.4rem', marginBottom: '0.4rem', alignItems: 'center' }}>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={lang.name}
+                  placeholder="Spanish"
+                  onChange={(e) => updateListField('languages', lang.id, 'name', e.target.value)}
+                  style={{ padding: '0.35rem 0.5rem' }}
+                />
+                <input
+                  type="text"
+                  className="form-input"
+                  value={lang.proficiency}
+                  placeholder="Fluent"
+                  onChange={(e) => updateListField('languages', lang.id, 'proficiency', e.target.value)}
+                  style={{ padding: '0.35rem 0.5rem' }}
+                />
+                <button 
+                  className="list-item-btn btn-delete" 
+                  onClick={() => removeListItem('languages', lang.id)}
+                  style={{ padding: '0.4rem' }}
+                >
+                  <Trash2 size={12} />
+                </button>
+              </div>
+            ))}
+
+            <button 
+              className="btn-add"
+              onClick={() => addListItem('languages', { name: '', proficiency: '' } as Language)}
+              style={{ marginTop: '0.5rem' }}
+            >
+              <Plus size={14} />
+              <span>Add Language</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* 7. CERTIFICATIONS ACCORDION */}
+      <div className="accordion-item">
+        <button className="accordion-header" onClick={() => toggleSection('certifications')}>
+          <div className="accordion-header-left">
+            <Award size={16} />
+            <span>Certifications & Awards</span>
+          </div>
+          {expandedSection === 'certifications' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+
+        {expandedSection === 'certifications' && (
+          <div className="accordion-content">
+            {data.certifications.map((cert, index) => (
+              <div key={cert.id} className="list-item-card">
+                <div className="list-item-header">
+                  <span className="list-item-title">{cert.name || 'New Certification'}</span>
+                  <div className="list-item-actions">
+                    <button 
+                      className="list-item-btn" 
+                      onClick={() => reorderListItem('certifications', index, 'up')}
+                      disabled={index === 0}
+                    >
+                      <ArrowUp size={14} />
+                    </button>
+                    <button 
+                      className="list-item-btn" 
+                      onClick={() => reorderListItem('certifications', index, 'down')}
+                      disabled={index === data.certifications.length - 1}
+                    >
+                      <ArrowDown size={14} />
+                    </button>
+                    <button 
+                      className="list-item-btn btn-delete" 
+                      onClick={() => removeListItem('certifications', cert.id)}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Certification / Award Name</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={cert.name}
+                    onChange={(e) => updateListField('certifications', cert.id, 'name', e.target.value)}
+                  />
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Issuing Organization</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={cert.issuer}
+                      onChange={(e) => updateListField('certifications', cert.id, 'issuer', e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Date Earned</label>
+                    <input
+                      type="month"
+                      className="form-input"
+                      value={cert.date}
+                      onChange={(e) => updateListField('certifications', cert.id, 'date', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Credential URL Link</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={cert.link}
+                    onChange={(e) => updateListField('certifications', cert.id, 'link', e.target.value)}
+                  />
+                </div>
+              </div>
+            ))}
+
+            <button 
+              className="btn-add"
+              onClick={() => addListItem('certifications', { name: '', issuer: '', date: '', link: '' } as Certification)}
+            >
+              <Plus size={14} />
+              <span>Add Certification</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+    </div>
+  );
+};
+
+
+================================================================================
+FILE: src/components/ResumePreview.tsx
+================================================================================
+import React from 'react';
+import type { ResumeData, ResumeStyle, WorkExperience, Education, Project, Skill, Language, Certification } from '../types/resume';
+import { COLOR_PALETTES, FONT_FAMILIES } from '../data/templates';
+import { Mail, Phone, MapPin, Globe } from 'lucide-react';
+
+interface ResumePreviewProps {
+  data: ResumeData;
+  style: ResumeStyle;
+  onChangeData: (updatedData: ResumeData) => void;
+}
+
+// Inline Editable Text Component to avoid cursor jump
+interface EditableTextProps {
+  value: string;
+  onChange: (val: string) => void;
+  placeholder?: string;
+  className?: string;
+  tagName?: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span' | 'div';
+  multiline?: boolean;
+  style?: React.CSSProperties;
+}
+
+const EditableText: React.FC<EditableTextProps> = ({
+  value,
+  onChange,
+  placeholder = "",
+  className = "",
+  tagName = "span",
+  multiline = false,
+  style = {}
+}) => {
+  const handleBlur = (e: React.FocusEvent<HTMLElement>) => {
+    const text = e.target.innerText;
+    if (text !== value) {
+      onChange(text);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (!multiline && e.key === 'Enter') {
+      e.preventDefault();
+      (e.target as HTMLElement).blur();
+    }
+  };
+
+  return React.createElement(
+    tagName,
+    {
+      className: `editable-element ${className}`,
+      contentEditable: true,
+      suppressContentEditableWarning: true,
+      onBlur: handleBlur,
+      onKeyDown: handleKeyDown,
+      "data-placeholder": placeholder,
+      style: { 
+        display: tagName === 'span' ? 'inline-block' : 'block',
+        minWidth: value ? 'none' : '60px',
+        ...style
+      }
+    },
+    value
+  );
+};
+
+export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, style, onChangeData }) => {
+  const activePalette = COLOR_PALETTES.find(p => p.id === style.colorPaletteId) || COLOR_PALETTES[0];
+  const activeFont = FONT_FAMILIES.find(f => f.id === style.fontFamilyId) || FONT_FAMILIES[0];
+
+  // Compile CSS Variables based on Style Configuration
+  const compiledVariables = {
+    '--primary-color': activePalette.primary,
+    '--secondary-color': activePalette.secondary,
+    '--accent-color': activePalette.accent,
+    '--text-color': activePalette.text,
+    '--bg-color': activePalette.background,
+    '--sidebar-bg': activePalette.sidebarBg || 'transparent',
+    '--sidebar-text': activePalette.sidebarText || activePalette.text,
+    '--banner-bg': activePalette.bannerBg || activePalette.primary,
+    '--banner-text': activePalette.bannerText || '#ffffff',
+    '--divider-color': style.layout === 'left-sidebar' && activePalette.id === 'dark-noir' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)',
+    // Fonts scale sizing
+    '--font-size': style.fontSize === 'sm' ? '12px' : style.fontSize === 'lg' ? '16px' : '14px',
+    '--line-height': style.fontSize === 'sm' ? '1.4' : style.fontSize === 'lg' ? '1.6' : '1.5',
+    // Section gaps
+    '--section-gap': style.spacing === 'compact' ? '0.8rem' : style.spacing === 'relaxed' ? '2.1rem' : '1.4rem',
+    // Page padding
+    '--page-padding': style.margins === 'narrow' ? '1.6rem' : style.margins === 'wide' ? '3.6rem' : '2.6rem',
+  } as React.CSSProperties;
+
+  // Inline updates handlers for state
+  const handleUpdatePersonalInfo = (field: keyof typeof data.personalInfo, value: string) => {
+    onChangeData({
+      ...data,
+      personalInfo: {
+        ...data.personalInfo,
+        [field]: value
+      }
+    });
+  };
+
+  const handleUpdateWorkExp = (id: string, field: keyof WorkExperience, value: any) => {
+    onChangeData({
+      ...data,
+      workExperience: data.workExperience.map(item => item.id === id ? { ...item, [field]: value } : item)
+    });
+  };
+
+  const handleUpdateEdu = (id: string, field: keyof Education, value: any) => {
+    onChangeData({
+      ...data,
+      education: data.education.map(item => item.id === id ? { ...item, [field]: value } : item)
+    });
+  };
+
+  const handleUpdateProj = (id: string, field: keyof Project, value: any) => {
+    onChangeData({
+      ...data,
+      projects: data.projects.map(item => item.id === id ? { ...item, [field]: value } : item)
+    });
+  };
+
+  const handleUpdateSkill = (id: string, field: keyof Skill, value: any) => {
+    onChangeData({
+      ...data,
+      skills: data.skills.map(item => item.id === id ? { ...item, [field]: value } : item)
+    });
+  };
+
+  const handleUpdateLang = (id: string, field: keyof Language, value: any) => {
+    onChangeData({
+      ...data,
+      languages: data.languages.map(item => item.id === id ? { ...item, [field]: value } : item)
+    });
+  };
+
+  const handleUpdateCert = (id: string, field: keyof Certification, value: any) => {
+    onChangeData({
+      ...data,
+      certifications: data.certifications.map(item => item.id === id ? { ...item, [field]: value } : item)
+    });
+  };
+
+  const handleUpdateCustomSection = (sectId: string, itemId: string, field: string, value: any) => {
+    onChangeData({
+      ...data,
+      customSections: data.customSections.map(sect => {
+        if (sect.id === sectId) {
+          return {
+            ...sect,
+            items: sect.items.map(item => item.id === itemId ? { ...item, [field]: value } : item)
+          };
+        }
+        return sect;
+      })
+    });
+  };
+
+  // --- SECTIONS RENDERERS ---
+
+  const renderHeader = () => {
+    const { personalInfo } = data;
+    const headerClass = `resume-header header-${style.headerStyle}`;
+
+    const contactGrid = (
+      <div className="contact-grid">
+        {personalInfo.email && (
+          <div className="contact-item">
+            <Mail size={12} />
+            <EditableText value={personalInfo.email} onChange={(val) => handleUpdatePersonalInfo('email', val)} placeholder="Email" />
+          </div>
+        )}
+        {personalInfo.phone && (
+          <div className="contact-item">
+            <Phone size={12} />
+            <EditableText value={personalInfo.phone} onChange={(val) => handleUpdatePersonalInfo('phone', val)} placeholder="Phone" />
+          </div>
+        )}
+        {personalInfo.location && (
+          <div className="contact-item">
+            <MapPin size={12} />
+            <EditableText value={personalInfo.location} onChange={(val) => handleUpdatePersonalInfo('location', val)} placeholder="Location" />
+          </div>
+        )}
+        {personalInfo.website && (
+          <div className="contact-item">
+            <Globe size={12} />
+            <EditableText value={personalInfo.website} onChange={(val) => handleUpdatePersonalInfo('website', val)} placeholder="Website" />
+          </div>
+        )}
+        {personalInfo.linkedin && (
+          <div className="contact-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+            <EditableText value={personalInfo.linkedin} onChange={(val) => handleUpdatePersonalInfo('linkedin', val)} placeholder="LinkedIn" />
+          </div>
+        )}
+        {personalInfo.github && (
+          <div className="contact-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+            <EditableText value={personalInfo.github} onChange={(val) => handleUpdatePersonalInfo('github', val)} placeholder="GitHub" />
+          </div>
+        )}
+      </div>
+    );
+
+    return (
+      <header className={headerClass}>
+        {style.headerStyle === 'split-profile' && style.showAvatars && personalInfo.avatar ? (
+          <div className="avatar-box">
+            <img src={personalInfo.avatar} alt="Profile" />
+          </div>
+        ) : null}
+
+        <div className="header-details">
+          <div className="name-title">
+            <EditableText 
+              tagName="h1" 
+              value={personalInfo.name} 
+              onChange={(val) => handleUpdatePersonalInfo('name', val)} 
+              placeholder="Your Name" 
+              style={{ fontSize: '2.25em', fontWeight: 800, margin: '0 0 0.15rem 0', color: style.headerStyle === 'bold-banner' ? 'var(--banner-text)' : 'var(--primary-color)', lineHeight: 1.1 }} 
+            />
+            <EditableText 
+              tagName="h2" 
+              value={personalInfo.title} 
+              onChange={(val) => handleUpdatePersonalInfo('title', val)} 
+              placeholder="Professional Title" 
+              style={{ fontSize: '1.2em', fontWeight: 500, margin: 0, color: style.headerStyle === 'bold-banner' ? 'var(--banner-text)' : 'var(--secondary-color)', opacity: 0.95 }} 
+            />
+          </div>
+          {style.headerStyle !== 'accent-line' && style.headerStyle !== 'bold-banner' && contactGrid}
+        </div>
+
+        {style.headerStyle === 'accent-line' && <div className="accent-bar" />}
+        {(style.headerStyle === 'accent-line' || style.headerStyle === 'bold-banner') && contactGrid}
+      </header>
+    );
+  };
+
+  const renderSectionTitle = (title: string) => {
+    return (
+      <div className="section-title-wrap">
+        <h3 className="section-title">{title}</h3>
+      </div>
+    );
+  };
+
+  const renderSummary = () => {
+    if (!data.personalInfo.summary) return null;
+    return (
+      <section className="resume-section">
+        {renderSectionTitle("Profile Summary")}
+        <EditableText 
+          tagName="p"
+          value={data.personalInfo.summary}
+          onChange={(val) => handleUpdatePersonalInfo('summary', val)}
+          placeholder="Write a brief professional summary..."
+          className="resume-item-desc"
+          multiline={true}
+          style={{ margin: 0 }}
+        />
+      </section>
+    );
+  };
+
+  const renderExperience = () => {
+    if (data.workExperience.length === 0) return null;
+    return (
+      <section className="resume-section">
+        {renderSectionTitle("Work Experience")}
+        <div className="section-list">
+          {data.workExperience.map(exp => (
+            <div key={exp.id} className="resume-item">
+              <div className="resume-item-top">
+                <EditableText 
+                  tagName="span"
+                  value={exp.position}
+                  onChange={(val) => handleUpdateWorkExp(exp.id, 'position', val)}
+                  placeholder="Position"
+                  className="resume-item-role"
+                />
+                <span className="resume-item-date" style={{ fontWeight: 400, fontSize: '0.85em', color: 'var(--secondary-color)' }}>
+                  <EditableText value={exp.startDate} onChange={(val) => handleUpdateWorkExp(exp.id, 'startDate', val)} placeholder="YYYY-MM" />
+                  {' - '}
+                  {exp.current ? 'Present' : <EditableText value={exp.endDate} onChange={(val) => handleUpdateWorkExp(exp.id, 'endDate', val)} placeholder="YYYY-MM" />}
+                </span>
+              </div>
+              <div className="resume-item-sub">
+                <EditableText 
+                  tagName="span"
+                  value={exp.company}
+                  onChange={(val) => handleUpdateWorkExp(exp.id, 'company', val)}
+                  placeholder="Company"
+                  className="resume-item-org"
+                />
+                <EditableText 
+                  tagName="span"
+                  value={exp.location}
+                  onChange={(val) => handleUpdateWorkExp(exp.id, 'location', val)}
+                  placeholder="Location"
+                />
+              </div>
+              <EditableText 
+                tagName="p"
+                value={exp.description}
+                onChange={(val) => handleUpdateWorkExp(exp.id, 'description', val)}
+                placeholder="Bullet points and accomplishments..."
+                className="resume-item-desc"
+                multiline={true}
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  };
+
+  const renderEducation = () => {
+    if (data.education.length === 0) return null;
+    return (
+      <section className="resume-section">
+        {renderSectionTitle("Education")}
+        <div className="section-list">
+          {data.education.map(edu => (
+            <div key={edu.id} className="resume-item">
+              <div className="resume-item-top">
+                <span className="resume-item-role">
+                  <EditableText value={edu.degree} onChange={(val) => handleUpdateEdu(edu.id, 'degree', val)} placeholder="Degree" />
+                  {' in '}
+                  <EditableText value={edu.fieldOfStudy} onChange={(val) => handleUpdateEdu(edu.id, 'fieldOfStudy', val)} placeholder="Field of Study" />
+                </span>
+                <span className="resume-item-date" style={{ fontWeight: 400, fontSize: '0.85em', color: 'var(--secondary-color)' }}>
+                  <EditableText value={edu.startDate} onChange={(val) => handleUpdateEdu(edu.id, 'startDate', val)} placeholder="YYYY-MM" />
+                  {' - '}
+                  <EditableText value={edu.endDate} onChange={(val) => handleUpdateEdu(edu.id, 'endDate', val)} placeholder="YYYY-MM" />
+                </span>
+              </div>
+              <div className="resume-item-sub">
+                <EditableText 
+                  tagName="span"
+                  value={edu.institution}
+                  onChange={(val) => handleUpdateEdu(edu.id, 'institution', val)}
+                  placeholder="Institution"
+                  className="resume-item-org"
+                />
+                <span>
+                  {edu.gpa && (
+                    <>
+                      GPA: <EditableText value={edu.gpa} onChange={(val) => handleUpdateEdu(edu.id, 'gpa', val)} placeholder="GPA" />
+                      {edu.location && ', '}
+                    </>
+                  )}
+                  <EditableText value={edu.location} onChange={(val) => handleUpdateEdu(edu.id, 'location', val)} placeholder="Location" />
+                </span>
+              </div>
+              {edu.description && (
+                <EditableText 
+                  tagName="p"
+                  value={edu.description}
+                  onChange={(val) => handleUpdateEdu(edu.id, 'description', val)}
+                  placeholder="Additional descriptions..."
+                  className="resume-item-desc"
+                  multiline={true}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  };
+
+  const renderProjects = () => {
+    if (data.projects.length === 0) return null;
+    return (
+      <section className="resume-section">
+        {renderSectionTitle("Projects")}
+        <div className="section-list">
+          {data.projects.map(proj => (
+            <div key={proj.id} className="resume-item">
+              <div className="resume-item-top">
+                <EditableText 
+                  tagName="span"
+                  value={proj.name}
+                  onChange={(val) => handleUpdateProj(proj.id, 'name', val)}
+                  placeholder="Project Name"
+                  style={{ fontWeight: 700 }}
+                />
+                {proj.link && (
+                  <EditableText 
+                    tagName="span"
+                    value={proj.link}
+                    onChange={(val) => handleUpdateProj(proj.id, 'link', val)}
+                    placeholder="Project Link"
+                    style={{ fontWeight: 400, fontSize: '0.8em', color: 'var(--accent-color)' }}
+                  />
+                )}
+              </div>
+              <div className="resume-item-sub" style={{ fontSize: '0.85em' }}>
+                <EditableText 
+                  tagName="span"
+                  value={proj.role}
+                  onChange={(val) => handleUpdateProj(proj.id, 'role', val)}
+                  placeholder="Your Role"
+                />
+                <span style={{ fontSize: '0.95em', color: 'var(--text-color)', opacity: 0.8 }}>
+                  Tech: {proj.technologies.join(', ')}
+                </span>
+              </div>
+              <EditableText 
+                tagName="p"
+                value={proj.description}
+                onChange={(val) => handleUpdateProj(proj.id, 'description', val)}
+                placeholder="Project Description..."
+                className="resume-item-desc"
+                multiline={true}
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  };
+
+  const renderSkills = () => {
+    if (data.skills.length === 0) return null;
+    return (
+      <section className="resume-section">
+        {renderSectionTitle("Skills")}
+        <div className="skills-wrap">
+          {data.skills.map(skill => (
+            <span key={skill.id} className="skill-tag">
+              <EditableText value={skill.name} onChange={(val) => handleUpdateSkill(skill.id, 'name', val)} placeholder="Skill" />
+              {skill.level && (
+                <span style={{ opacity: 0.65, fontSize: '0.85em' }}>
+                  {' ('}
+                  <EditableText value={skill.level} onChange={(val) => handleUpdateSkill(skill.id, 'level', val)} placeholder="Level" />
+                  {')'}
+                </span>
+              )}
+            </span>
+          ))}
+        </div>
+      </section>
+    );
+  };
+
+  const renderLanguages = () => {
+    if (data.languages.length === 0) return null;
+    return (
+      <section className="resume-section">
+        {renderSectionTitle("Languages")}
+        <div className="skills-wrap">
+          {data.languages.map(lang => (
+            <span key={lang.id} className="skill-tag" style={{ background: 'transparent', border: '1px solid var(--divider-color)' }}>
+              <EditableText value={lang.name} onChange={(val) => handleUpdateLang(lang.id, 'name', val)} placeholder="Language" />
+              {lang.proficiency && (
+                <span style={{ opacity: 0.7, fontSize: '0.85em' }}>
+                  {': '}
+                  <EditableText value={lang.proficiency} onChange={(val) => handleUpdateLang(lang.id, 'proficiency', val)} placeholder="Level" />
+                </span>
+              )}
+            </span>
+          ))}
+        </div>
+      </section>
+    );
+  };
+
+  const renderCertifications = () => {
+    if (data.certifications.length === 0) return null;
+    return (
+      <section className="resume-section">
+        {renderSectionTitle("Certifications")}
+        <div className="section-list">
+          {data.certifications.map(cert => (
+            <div key={cert.id} className="resume-item" style={{ gap: 0 }}>
+              <div className="resume-item-top" style={{ fontWeight: 600 }}>
+                <span>
+                  <EditableText value={cert.name} onChange={(val) => handleUpdateCert(cert.id, 'name', val)} placeholder="Cert Name" />
+                  {cert.issuer && (
+                    <>
+                      {' — '}
+                      <EditableText value={cert.issuer} onChange={(val) => handleUpdateCert(cert.id, 'issuer', val)} placeholder="Issuer" style={{ color: 'var(--secondary-color)', fontWeight: 500 }} />
+                    </>
+                  )}
+                </span>
+                <span className="resume-item-date" style={{ fontWeight: 400, fontSize: '0.85em', color: 'var(--secondary-color)' }}>
+                  <EditableText value={cert.date} onChange={(val) => handleUpdateCert(cert.id, 'date', val)} placeholder="YYYY-MM" />
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  };
+
+  const renderCustomSections = () => {
+    return data.customSections.map(sect => {
+      if (sect.items.length === 0) return null;
+      return (
+        <section key={sect.id} className="resume-section">
+          {renderSectionTitle(sect.title)}
+          <div className="section-list">
+            {sect.items.map(item => (
+              <div key={item.id} className="resume-item">
+                <div className="resume-item-top">
+                  <EditableText 
+                    tagName="span"
+                    value={item.title}
+                    onChange={(val) => handleUpdateCustomSection(sect.id, item.id, 'title', val)}
+                    placeholder="Title"
+                    style={{ fontWeight: 700 }}
+                  />
+                  <span className="resume-item-date" style={{ fontWeight: 400, fontSize: '0.85em', color: 'var(--secondary-color)' }}>
+                    <EditableText value={item.date} onChange={(val) => handleUpdateCustomSection(sect.id, item.id, 'date', val)} placeholder="Date / Range" />
+                  </span>
+                </div>
+                {item.subtitle && (
+                  <div className="resume-item-sub">
+                    <EditableText 
+                      tagName="span"
+                      value={item.subtitle}
+                      onChange={(val) => handleUpdateCustomSection(sect.id, item.id, 'subtitle', val)}
+                      placeholder="Subtitle"
+                      className="resume-item-org"
+                    />
+                  </div>
+                )}
+                {item.description && (
+                  <EditableText 
+                    tagName="p"
+                    value={item.description}
+                    onChange={(val) => handleUpdateCustomSection(sect.id, item.id, 'description', val)}
+                    placeholder="Description..."
+                    className="resume-item-desc"
+                    multiline={true}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      );
+    });
+  };
+
+  // --- LAYOUT ARRANGERS ---
+
+  const renderLayoutContent = () => {
+    const layout = style.layout;
+
+    if (layout === 'left-sidebar' || layout === 'right-sidebar') {
+      const sidebarContent = (
+        <div className="resume-sidebar-col">
+          {renderSkills()}
+          {renderLanguages()}
+          {renderCertifications()}
+        </div>
+      );
+
+      const mainContent = (
+        <div className="resume-main-col">
+          {renderSummary()}
+          {renderExperience()}
+          {renderEducation()}
+          {renderProjects()}
+          {renderCustomSections()}
+        </div>
+      );
+
+      return (
+        <div className={`layout-${layout}`}>
+          {layout === 'left-sidebar' ? (
+            <>
+              <div className="layout-two-column-bg">{sidebarContent}</div>
+              {mainContent}
+            </>
+          ) : (
+            <>
+              {mainContent}
+              <div className="layout-two-column-bg">{sidebarContent}</div>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    if (layout === 'three-column') {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--section-gap)' }}>
+          {renderSummary()}
+          <div className="layout-three-column-grid">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--section-gap)' }}>
+              {renderExperience()}
+              {renderCustomSections()}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--section-gap)' }}>
+              {renderEducation()}
+              {renderProjects()}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--section-gap)' }}>
+              {renderSkills()}
+              {renderLanguages()}
+              {renderCertifications()}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Default: single column layout
+    return (
+      <div className="resume-body">
+        {renderSummary()}
+        {renderExperience()}
+        {renderEducation()}
+        {renderProjects()}
+        {renderSkills()}
+        {renderLanguages()}
+        {renderCertifications()}
+        {renderCustomSections()}
+      </div>
+    );
+  };
+
+  return (
+    <div 
+      className={`resume-page ${activeFont.class}`} 
+      style={compiledVariables}
+      id="print-resume-page"
+    >
+      {renderHeader()}
+      {renderLayoutContent()}
+    </div>
+  );
+};
+
+
+================================================================================
+FILE: src/components/StyleCustomizer.tsx
+================================================================================
+import React from 'react';
+import type { ResumeStyle, LayoutType, HeaderStyle, DividerStyle, FontSize, SpacingSize, MarginSize } from '../types/resume';
+import { COLOR_PALETTES, FONT_FAMILIES } from '../data/templates';
+import { Type, Palette, Layout, Columns, Sliders, ToggleLeft, ToggleRight } from 'lucide-react';
+
+interface StyleCustomizerProps {
+  style: ResumeStyle;
+  onChangeStyle: (updatedStyle: ResumeStyle) => void;
+}
+
+export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({ style, onChangeStyle }) => {
+  const updateStyleField = <K extends keyof ResumeStyle>(field: K, value: ResumeStyle[K]) => {
+    onChangeStyle({
+      ...style,
+      [field]: value
+    });
+  };
+
+  const layouts: { id: LayoutType; name: string }[] = [
+    { id: 'single-column', name: '1 Column' },
+    { id: 'left-sidebar', name: 'Left Bar' },
+    { id: 'right-sidebar', name: 'Right Bar' },
+    { id: 'split-header', name: 'Split Head' },
+    { id: 'three-column', name: '3 Columns' }
+  ];
+
+  const headers: { id: HeaderStyle; name: string }[] = [
+    { id: 'minimalist', name: 'Minimal' },
+    { id: 'bold-banner', name: 'Banner' },
+    { id: 'split-profile', name: 'Profile' },
+    { id: 'accent-line', name: 'Accent' }
+  ];
+
+  const dividers: { id: DividerStyle; name: string }[] = [
+    { id: 'simple', name: 'Simple' },
+    { id: 'accent-block', name: 'Block' },
+    { id: 'pill-badges', name: 'Pills' },
+    { id: 'timeline', name: 'Timeline' }
+  ];
+
+  const fontSizes: { id: FontSize; name: string }[] = [
+    { id: 'sm', name: 'Small' },
+    { id: 'md', name: 'Medium' },
+    { id: 'lg', name: 'Large' }
+  ];
+
+  const spacings: { id: SpacingSize; name: string }[] = [
+    { id: 'compact', name: 'Compact' },
+    { id: 'normal', name: 'Normal' },
+    { id: 'relaxed', name: 'Relaxed' }
+  ];
+
+  const margins: { id: MarginSize; name: string }[] = [
+    { id: 'narrow', name: 'Narrow' },
+    { id: 'normal', name: 'Normal' },
+    { id: 'wide', name: 'Wide' }
+  ];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      
+      {/* 1. Color Palette Selector */}
+      <div>
+        <div className="customizer-section-title">
+          <Palette size={13} />
+          <span>Color Palettes</span>
+        </div>
+        <div className="preset-grid">
+          {COLOR_PALETTES.map(palette => (
+            <button
+              key={palette.id}
+              className={`color-option-btn ${style.colorPaletteId === palette.id ? 'active' : ''}`}
+              onClick={() => updateStyleField('colorPaletteId', palette.id)}
+              title={palette.name}
+            >
+              <div className="color-option-split">
+                <div className="color-option-bar" style={{ backgroundColor: palette.primary }} />
+                <div className="color-option-bar" style={{ backgroundColor: palette.secondary }} />
+                <div className="color-option-bar" style={{ backgroundColor: palette.accent }} />
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 2. Typography Selector */}
+      <div>
+        <div className="customizer-section-title">
+          <Type size={13} />
+          <span>Typography</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+          {FONT_FAMILIES.map(font => (
+            <button
+              key={font.id}
+              className={`font-option-btn ${style.fontFamilyId === font.id ? 'active' : ''}`}
+              onClick={() => updateStyleField('fontFamilyId', font.id)}
+              style={{ fontFamily: font.id === 'fira-code' ? 'monospace' : font.id === 'playfair' ? 'serif' : 'sans-serif' }}
+            >
+              {font.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 3. Page Layout Selector */}
+      <div>
+        <div className="customizer-section-title">
+          <Layout size={13} />
+          <span>Structure Layout</span>
+        </div>
+        <div className="toggle-group" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.25rem' }}>
+          {layouts.map(layout => (
+            <button
+              key={layout.id}
+              className={`toggle-btn ${style.layout === layout.id ? 'active' : ''}`}
+              onClick={() => updateStyleField('layout', layout.id)}
+            >
+              {layout.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 4. Header Style Selector */}
+      <div>
+        <div className="customizer-section-title">
+          <Columns size={13} />
+          <span>Header Style</span>
+        </div>
+        <div className="toggle-group" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.25rem', marginBottom: '0.5rem' }}>
+          {headers.map(header => (
+            <button
+              key={header.id}
+              className={`toggle-btn ${style.headerStyle === header.id ? 'active' : ''}`}
+              onClick={() => updateStyleField('headerStyle', header.id)}
+            >
+              {header.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 5. Section Dividers Selector */}
+      <div>
+        <div className="customizer-section-title">
+          <Columns size={13} />
+          <span>Section Dividers</span>
+        </div>
+        <div className="toggle-group" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.25rem' }}>
+          {dividers.map(divider => (
+            <button
+              key={divider.id}
+              className={`toggle-btn ${style.dividerStyle === divider.id ? 'active' : ''}`}
+              onClick={() => updateStyleField('dividerStyle', divider.id)}
+            >
+              {divider.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 6. General Spacings and Sizing controls */}
+      <div>
+        <div className="customizer-section-title">
+          <Sliders size={13} />
+          <span>Sizing & Margins</span>
+        </div>
+
+        {/* Font size toggle */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Text Size</span>
+          <div className="toggle-group" style={{ width: '210px' }}>
+            {fontSizes.map(size => (
+              <button
+                key={size.id}
+                className={`toggle-btn ${style.fontSize === size.id ? 'active' : ''}`}
+                onClick={() => updateStyleField('fontSize', size.id)}
+              >
+                {size.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Section spacing toggle */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Spacing</span>
+          <div className="toggle-group" style={{ width: '210px' }}>
+            {spacings.map(space => (
+              <button
+                key={space.id}
+                className={`toggle-btn ${style.spacing === space.id ? 'active' : ''}`}
+                onClick={() => updateStyleField('spacing', space.id)}
+              >
+                {space.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Page Margins toggle */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Page Margins</span>
+          <div className="toggle-group" style={{ width: '210px' }}>
+            {margins.map(margin => (
+              <button
+                key={margin.id}
+                className={`toggle-btn ${style.margins === margin.id ? 'active' : ''}`}
+                onClick={() => updateStyleField('margins', margin.id)}
+              >
+                {margin.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Toggle Avatars */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--panel-border)' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Show Profile Image</span>
+          <button
+            onClick={() => updateStyleField('showAvatars', !style.showAvatars)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: style.showAvatars ? '#3b82f6' : 'var(--text-muted)',
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            {style.showAvatars ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
+          </button>
+        </div>
+      </div>
+
+    </div>
+  );
+};
+
+
+================================================================================
+FILE: src/components/TemplateSelector.tsx
+================================================================================
+import React, { useState, useMemo } from 'react';
+import { TEMPLATES } from '../data/templates';
+import type { ResumeTemplate } from '../types/resume';
+import { Search, Grid, Info } from 'lucide-react';
+
+interface TemplateSelectorProps {
+  activeTemplateId: string;
+  onSelectTemplate: (template: ResumeTemplate) => void;
+}
+
+type CategoryType = 'All' | 'Professional' | 'Modern' | 'Creative' | 'Academic' | 'Technical' | 'Minimalist';
+
+export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
+  activeTemplateId,
+  onSelectTemplate
+}) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<CategoryType>('All');
+
+  const categories: CategoryType[] = ['All', 'Professional', 'Modern', 'Creative', 'Academic', 'Technical', 'Minimalist'];
+
+  const filteredTemplates = useMemo(() => {
+    return TEMPLATES.filter(tmpl => {
+      const matchesSearch = tmpl.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            tmpl.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory === 'All' || tmpl.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchQuery, selectedCategory]);
+
+  // Renders a stylized thumbnail representation of the template's layout style
+  const renderTemplateMock = (tmpl: ResumeTemplate) => {
+    const layout = tmpl.style.layout;
+    const header = tmpl.style.headerStyle;
+    const paletteId = tmpl.style.colorPaletteId;
+
+    // Map color values for the mock representation
+    let primaryColor = '#3b82f6';
+
+    if (paletteId === 'classic-navy') primaryColor = '#1e3a8a';
+    else if (paletteId === 'emerald-modern') primaryColor = '#059669';
+    else if (paletteId === 'sunset-orange') primaryColor = '#ea580c';
+    else if (paletteId === 'royal-purple') primaryColor = '#7c3aed';
+    else if (paletteId === 'dark-noir') primaryColor = '#0f172a';
+    else if (paletteId === 'monochrome-slate') primaryColor = '#4b5563';
+    else if (paletteId === 'teal-clean') primaryColor = '#0891b2';
+    else if (paletteId === 'warm-burgundy') primaryColor = '#be123c';
+
+    const hasHeaderBanner = header === 'bold-banner';
+    const isSidebarLayout = layout === 'left-sidebar' || layout === 'right-sidebar';
+    const isThreeCol = layout === 'three-column';
+
+    return (
+      <div className="template-preview-mock" style={{ border: activeTemplateId === tmpl.id ? `1.5px solid ${primaryColor}` : '1px solid rgba(255,255,255,0.08)' }}>
+        {/* Banner Mock Header */}
+        {hasHeaderBanner ? (
+          <div style={{ height: '22px', backgroundColor: primaryColor, borderRadius: '2px', width: '100%', marginBottom: '3px' }} />
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
+            {header === 'split-profile' && <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: primaryColor }} />}
+            <div style={{ height: '7px', backgroundColor: primaryColor, borderRadius: '1px', width: '45%' }} />
+          </div>
+        )}
+
+        {/* Columns Mock */}
+        {isSidebarLayout ? (
+          <div style={{ display: 'flex', gap: '3px', flex: 1 }}>
+            {layout === 'left-sidebar' && <div style={{ width: '28%', background: paletteId === 'dark-noir' ? '#0f172a' : 'rgba(255, 255, 255, 0.05)', borderRadius: '1px' }} />}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              <div style={{ height: '5px', background: 'rgba(255,255,255,0.06)', width: '90%' }} />
+              <div style={{ height: '5px', background: 'rgba(255,255,255,0.06)', width: '80%' }} />
+              <div style={{ height: '5px', background: 'rgba(255,255,255,0.06)', width: '85%' }} />
+            </div>
+            {layout === 'right-sidebar' && <div style={{ width: '28%', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '1px' }} />}
+          </div>
+        ) : isThreeCol ? (
+          <div style={{ display: 'flex', gap: '3px', flex: 1 }}>
+            <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', borderRadius: '1px' }} />
+            <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', borderRadius: '1px' }} />
+            <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', borderRadius: '1px' }} />
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', flex: 1 }}>
+            <div style={{ height: '5px', background: 'rgba(255,255,255,0.06)', width: '100%' }} />
+            <div style={{ height: '5px', background: 'rgba(255,255,255,0.06)', width: '95%' }} />
+            <div style={{ height: '5px', background: 'rgba(255,255,255,0.06)', width: '70%' }} />
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Search Header */}
+      <div style={{ position: 'relative', marginBottom: '1rem' }}>
+        <input
+          type="text"
+          placeholder="Search templates..."
+          className="form-input"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{ paddingLeft: '2.25rem' }}
+        />
+        <Search size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+      </div>
+
+      {/* Category Tags */}
+      <div className="category-filters">
+        {categories.map(cat => (
+          <button
+            key={cat}
+            className={`filter-badge ${selectedCategory === cat ? 'active' : ''}`}
+            onClick={() => setSelectedCategory(cat)}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Templates List */}
+      <div style={{ flex: 1, overflowY: 'auto', paddingRight: '2px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--text-muted)', fontSize: '0.75rem', marginBottom: '0.75rem' }}>
+          <Grid size={12} />
+          <span>Showing {filteredTemplates.length} templates</span>
+        </div>
+
+        <div className="templates-grid">
+          {filteredTemplates.map(tmpl => {
+            const isActive = activeTemplateId === tmpl.id;
+            return (
+              <div
+                key={tmpl.id}
+                className={`template-card ${isActive ? 'active' : ''}`}
+                onClick={() => onSelectTemplate(tmpl)}
+                title={tmpl.description}
+              >
+                {renderTemplateMock(tmpl)}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.25rem', gap: '4px' }}>
+                  <span className="template-card-name">{tmpl.name}</span>
+                  <div title={tmpl.description} style={{ color: 'var(--text-muted)', cursor: 'help', flexShrink: 0 }}>
+                    <Info size={11} />
+                  </div>
+                </div>
+                <span className="template-card-tag">{tmpl.category}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        {filteredTemplates.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: '0.9rem', margin: 0 }}>No templates matched your search.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+
+================================================================================
+FILE: src/data/initialData.ts
+================================================================================
+import type { ResumeData } from '../types/resume';
+
+export const initialResumeData: ResumeData = {
+  personalInfo: {
+    name: "Alex Morgan",
+    title: "Senior Full Stack Engineer",
+    email: "alex.morgan@techcorp.com",
+    phone: "+1 (555) 019-2834",
+    location: "San Francisco, CA",
+    website: "https://alexmorgan.dev",
+    linkedin: "linkedin.com/in/alexmorgan",
+    github: "github.com/alexmorgan",
+    avatar: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9IiMzQjgyRjYiLz48cGF0aCBkPSJNNTAgMjVjLTguMyAwLTE1IDYuNy0xNSAxNXM2LjcgMTUgMTUgMTUgMTUtNi43IDE1LTE1LTYuNy0xNS0xNS0xNXptMCAzNWMtMTUuNiAwLTMxIDcuOC0zMSAxOC44VjgyeDYydi0zLjJjMC0xMS0xNS40LTE4LjgtMzEtMTguOHoiIGZpbGw9IiNGRkZGRkYiLz48L3N2Zz4=",
+    summary: "Innovative Senior Full Stack Engineer with over 8 years of experience designing, building, and deploying scalable web applications. Expert in React, TypeScript, Node.js, and Cloud Infrastructure. Passionate about engineering excellence, performance optimization, and building intuitive user experiences that solve complex business challenges."
+  },
+  workExperience: [
+    {
+      id: "exp-1",
+      company: "TechGlobal Inc.",
+      position: "Senior Full Stack Engineer",
+      location: "San Francisco, CA",
+      startDate: "2022-06",
+      endDate: "",
+      current: true,
+      description: "• Architected and built a real-time analytics dashboard using React, TypeScript, and Node.js, improving page load speeds by 42%.\n• Spearheaded the migration of a legacy monolithic backend to a microservices architecture on AWS (ECS, Lambda, API Gateway), reducing operational costs by 28%.\n• Managed a team of 5 engineers, establishing agile best practices, code reviews, and CI/CD pipelines using GitHub Actions.\n• Collaborated with product teams to design and implement collaborative workspace features, boosting monthly active users by 15%."
+    },
+    {
+      id: "exp-2",
+      company: "Innovate Solutions",
+      position: "Full Stack Developer",
+      location: "Boston, MA",
+      startDate: "2019-03",
+      endDate: "2022-05",
+      current: false,
+      description: "• Developed responsive, pixel-perfect user interfaces using React, Redux Toolkit, and TailwindCSS.\n• Implemented secure authentication and authorization flows utilizing OAuth 2.0 and JWT tokens.\n• Optimized database queries and schemas in PostgreSQL, resulting in a 35% reduction in API response times.\n• Authored comprehensive unit and integration tests using Jest and React Testing Library, raising code coverage from 60% to 88%."
+    },
+    {
+      id: "exp-3",
+      company: "StartupHub",
+      position: "Software Engineer Intern",
+      location: "Remote",
+      startDate: "2018-06",
+      endDate: "2018-09",
+      current: false,
+      description: "• Built a customer feedback collection widget using vanilla JavaScript, HTML, and CSS that was integrated into 20+ partner websites.\n• Assisted in developing core business logic using Express.js and MongoDB.\n• Monitored system health and application errors using Sentry, resolving 40+ bug reports."
+    }
+  ],
+  education: [
+    {
+      id: "edu-1",
+      institution: "Stanford University",
+      degree: "Bachelor of Science",
+      fieldOfStudy: "Computer Science",
+      location: "Stanford, CA",
+      startDate: "2015-09",
+      endDate: "2019-06",
+      gpa: "3.85 / 4.00",
+      description: "Specialized in Software Engineering and Database Systems. Recipient of Dean's List honors for 6 semesters. Tech Lead for the Stanford Web Development Club."
+    }
+  ],
+  projects: [
+    {
+      id: "proj-1",
+      name: "CloudScale SaaS",
+      role: "Lead Creator",
+      description: "A serverless cloud deployment and monitoring tool that allows developers to spin up development environments in one click. Features visual architecture maps and cost optimization alerts.",
+      technologies: ["React", "TypeScript", "Node.js", "AWS Lambda", "DynamoDB"],
+      link: "https://github.com/alexmorgan/cloudscale"
+    },
+    {
+      id: "proj-2",
+      name: "DevFlow Framework",
+      role: "Open Source Maintainer",
+      description: "A lightweight, type-safe router and state management library for React and Vite projects. Has over 12k weekly downloads and a community of 50+ contributors.",
+      technologies: ["TypeScript", "React", "Rollup", "Vitest"],
+      link: "https://devflow.org"
+    }
+  ],
+  skills: [
+    { id: "sk-1", name: "TypeScript", level: "Expert", category: "Languages" },
+    { id: "sk-2", name: "JavaScript", level: "Expert", category: "Languages" },
+    { id: "sk-3", name: "Python", level: "Intermediate", category: "Languages" },
+    { id: "sk-4", name: "SQL", level: "Advanced", category: "Languages" },
+    { id: "sk-5", name: "React / Next.js", level: "Expert", category: "Frameworks" },
+    { id: "sk-6", name: "Node.js / Express", level: "Expert", category: "Frameworks" },
+    { id: "sk-7", name: "GraphQL", level: "Advanced", category: "Frameworks" },
+    { id: "sk-8", name: "PostgreSQL", level: "Advanced", category: "Databases" },
+    { id: "sk-9", name: "MongoDB", level: "Advanced", category: "Databases" },
+    { id: "sk-10", name: "Docker", level: "Advanced", category: "Tools" },
+    { id: "sk-11", name: "AWS (Lambda, S3, ECS)", level: "Advanced", category: "Tools" },
+    { id: "sk-12", name: "CI/CD (GitHub Actions)", level: "Advanced", category: "Tools" }
+  ],
+  languages: [
+    { id: "lan-1", name: "English", proficiency: "Native" },
+    { id: "lan-2", name: "Spanish", proficiency: "Conversational" }
+  ],
+  certifications: [
+    {
+      id: "cert-1",
+      name: "AWS Certified Solutions Architect – Associate",
+      issuer: "Amazon Web Services (AWS)",
+      date: "2023-08",
+      link: ""
+    },
+    {
+      id: "cert-2",
+      name: "Certified ScrumMaster (CSM)",
+      issuer: "Scrum Alliance",
+      date: "2021-11",
+      link: ""
+    }
+  ],
+  customSections: [
+    {
+      id: "cust-1",
+      title: "Volunteering",
+      items: [
+        {
+          id: "cust-item-1",
+          title: "Technical Mentor",
+          subtitle: "CoderDojo San Francisco",
+          date: "2020 - Present",
+          description: "Mentor underprivileged middle school children in building web pages and introducing basic programming concepts using Scratch and HTML."
+        }
+      ]
+    }
+  ]
+};
+
+
+================================================================================
+FILE: src/data/templates.ts
+================================================================================
+import type { ColorPalette, FontFamily, ResumeTemplate } from '../types/resume';
+
+export const COLOR_PALETTES: ColorPalette[] = [
+  {
+    id: "classic-navy",
+    name: "Classic Navy",
+    primary: "#1E3A8A", // dark blue
+    secondary: "#475569", // slate grey
+    accent: "#3B82F6", // bright blue
+    text: "#1F2937", // off-black
+    background: "#FFFFFF",
+    sidebarBg: "#F3F4F6", // light grey sidebar
+    sidebarText: "#1F2937",
+    bannerBg: "#1E3A8A",
+    bannerText: "#FFFFFF"
+  },
+  {
+    id: "emerald-modern",
+    name: "Emerald Professional",
+    primary: "#065F46", // dark emerald
+    secondary: "#047857", // emerald
+    accent: "#10B981", // active emerald
+    text: "#292524", // stone dark
+    background: "#FFFFFF",
+    sidebarBg: "#ECFDF5", // light green sidebar
+    sidebarText: "#065F46",
+    bannerBg: "#065F46",
+    bannerText: "#FFFFFF"
+  },
+  {
+    id: "sunset-orange",
+    name: "Creative Sunset",
+    primary: "#C2410C", // orange-red
+    secondary: "#7C2D12", // dark brown
+    accent: "#F97316", // orange
+    text: "#1F2937",
+    background: "#FFFFFF",
+    sidebarBg: "#FFF7ED", // light orange sidebar
+    sidebarText: "#431407",
+    bannerBg: "#C2410C",
+    bannerText: "#FFFFFF"
+  },
+  {
+    id: "royal-purple",
+    name: "Royal Velvet",
+    primary: "#5B21B6", // deep purple
+    secondary: "#6D28D9", // purple
+    accent: "#8B5CF6", // violet
+    text: "#111827",
+    background: "#FFFFFF",
+    sidebarBg: "#F5F3FF", // lavender sidebar
+    sidebarText: "#5B21B6",
+    bannerBg: "#5B21B6",
+    bannerText: "#FFFFFF"
+  },
+  {
+    id: "dark-noir",
+    name: "Modern Executive Noir",
+    primary: "#0F172A", // slate-900 (dark black-blue)
+    secondary: "#475569", // slate-600
+    accent: "#0EA5E9", // sky-500
+    text: "#0F172A",
+    background: "#FFFFFF",
+    sidebarBg: "#0F172A", // fully dark sidebar
+    sidebarText: "#F8FAFC", // white text in sidebar
+    bannerBg: "#0F172A",
+    bannerText: "#FFFFFF"
+  },
+  {
+    id: "monochrome-slate",
+    name: "Minimalist Slate",
+    primary: "#374151", // charcoal
+    secondary: "#6B7280", // medium grey
+    accent: "#9CA3AF", // silver grey
+    text: "#111827",
+    background: "#FFFFFF",
+    sidebarBg: "#F9FAFB", // minimalist off-white sidebar
+    sidebarText: "#374151",
+    bannerBg: "#374151",
+    bannerText: "#FFFFFF"
+  },
+  {
+    id: "teal-clean",
+    name: "Ocean Teal",
+    primary: "#075985", // ocean blue/teal
+    secondary: "#0369A1", // light ocean blue
+    accent: "#06B6D4", // cyan
+    text: "#1F2937",
+    background: "#FFFFFF",
+    sidebarBg: "#F0F9FF", // light blue sidebar
+    sidebarText: "#075985",
+    bannerBg: "#075985",
+    bannerText: "#FFFFFF"
+  },
+  {
+    id: "warm-burgundy",
+    name: "Warm Burgundy",
+    primary: "#881337", // deep burgundy
+    secondary: "#9F1239", // red-800
+    accent: "#F43F5E", // rose
+    text: "#27272A", // zinc dark
+    background: "#FFFFFF",
+    sidebarBg: "#FFF1F2", // light rose sidebar
+    sidebarText: "#881337",
+    bannerBg: "#881337",
+    bannerText: "#FFFFFF"
+  }
+];
+
+export const FONT_FAMILIES: FontFamily[] = [
+  { id: "inter", name: "Inter (Modern Sans)", class: "font-sans" },
+  { id: "playfair", name: "Playfair Display (Elegant Serif)", class: "font-serif" },
+  { id: "fira-code", name: "Fira Code (Clean Monospace)", class: "font-mono" },
+  { id: "outfit", name: "Outfit (Geometric Modern)", class: "font-outfit" }
+];
+
+export const TEMPLATES: ResumeTemplate[] = [
+  // --- PROFESSIONAL TEMPLATES (7) ---
+  {
+    id: "tmpl-1",
+    name: "The Executive Director",
+    category: "Professional",
+    description: "Traditional single-column layout with a minimalist header and classic navy accents, ideal for corporate leadership and manager roles.",
+    style: {
+      layout: "single-column",
+      headerStyle: "minimalist",
+      colorPaletteId: "classic-navy",
+      fontFamilyId: "playfair",
+      dividerStyle: "simple",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-2",
+    name: "The Modern Boardroom",
+    category: "Professional",
+    description: "Two-column design with a subtle left sidebar and clean dividers, giving structure to deep professional careers.",
+    style: {
+      layout: "left-sidebar",
+      headerStyle: "accent-line",
+      colorPaletteId: "classic-navy",
+      fontFamilyId: "inter",
+      dividerStyle: "accent-block",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-3",
+    name: "The Global Consultant",
+    category: "Professional",
+    description: "Three-column grid with compact spacing, designed for packing deep expertise, consulting histories, and international projects.",
+    style: {
+      layout: "three-column",
+      headerStyle: "minimalist",
+      colorPaletteId: "monochrome-slate",
+      fontFamilyId: "inter",
+      dividerStyle: "simple",
+      fontSize: "sm",
+      spacing: "compact",
+      margins: "narrow",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-4",
+    name: "The Burgundy Chief",
+    category: "Professional",
+    description: "Single column with bold headers and warm burgundy tones. Brings high-end authority to business managers.",
+    style: {
+      layout: "single-column",
+      headerStyle: "accent-line",
+      colorPaletteId: "warm-burgundy",
+      fontFamilyId: "playfair",
+      dividerStyle: "accent-block",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-5",
+    name: "The Emerald Partner",
+    category: "Professional",
+    description: "Two-column right-sidebar configuration in rich green tones. Fits financial analysts and law partners.",
+    style: {
+      layout: "right-sidebar",
+      headerStyle: "minimalist",
+      colorPaletteId: "emerald-modern",
+      fontFamilyId: "inter",
+      dividerStyle: "simple",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-6",
+    name: "The Enterprise Architect",
+    category: "Professional",
+    description: "Classic layout with split-header details. Maximizes corporate presentation value and certifications list.",
+    style: {
+      layout: "split-header",
+      headerStyle: "accent-line",
+      colorPaletteId: "classic-navy",
+      fontFamilyId: "inter",
+      dividerStyle: "simple",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-7",
+    name: "The Legacy Advisor",
+    category: "Professional",
+    description: "Single column with large serif headings and timeline details. Fits experienced advisors and attorneys.",
+    style: {
+      layout: "single-column",
+      headerStyle: "minimalist",
+      colorPaletteId: "monochrome-slate",
+      fontFamilyId: "playfair",
+      dividerStyle: "timeline",
+      fontSize: "md",
+      spacing: "relaxed",
+      margins: "wide",
+      showAvatars: false
+    }
+  },
+
+  // --- MODERN TEMPLATES (7) ---
+  {
+    id: "tmpl-8",
+    name: "The Silicon Valley Lead",
+    category: "Modern",
+    description: "Features a modern dark sidebar on the left and bright teal accents. Very polished and tech-industry standard.",
+    style: {
+      layout: "left-sidebar",
+      headerStyle: "split-profile",
+      colorPaletteId: "dark-noir",
+      fontFamilyId: "outfit",
+      dividerStyle: "pill-badges",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: true
+    }
+  },
+  {
+    id: "tmpl-9",
+    name: "The Geometric Architect",
+    category: "Modern",
+    description: "Bold Outfit font with geometric spacing and thick accent divider lines. Feels clean and premium.",
+    style: {
+      layout: "single-column",
+      headerStyle: "accent-line",
+      colorPaletteId: "teal-clean",
+      fontFamilyId: "outfit",
+      dividerStyle: "accent-block",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-10",
+    name: "The Ocean Gradient",
+    category: "Modern",
+    description: "Rich ocean teal banner header with clean modern columns. Eye-catching layout for high-end digital leads.",
+    style: {
+      layout: "single-column",
+      headerStyle: "bold-banner",
+      colorPaletteId: "teal-clean",
+      fontFamilyId: "inter",
+      dividerStyle: "simple",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-11",
+    name: "The Slate Metro",
+    category: "Modern",
+    description: "Two-column grid layout with clean outline borders. Offers structural compactness and a corporate design.",
+    style: {
+      layout: "left-sidebar",
+      headerStyle: "minimalist",
+      colorPaletteId: "monochrome-slate",
+      fontFamilyId: "inter",
+      dividerStyle: "accent-block",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-12",
+    name: "The Purple Fusion",
+    category: "Modern",
+    description: "Features a dark purple sidebar and modern round avatars. Fits product managers and agile leaders.",
+    style: {
+      layout: "left-sidebar",
+      headerStyle: "split-profile",
+      colorPaletteId: "royal-purple",
+      fontFamilyId: "outfit",
+      dividerStyle: "pill-badges",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: true
+    }
+  },
+  {
+    id: "tmpl-13",
+    name: "The Split Professional",
+    category: "Modern",
+    description: "Split header layout, dividing the top contact details and profile cleanly from the sections below.",
+    style: {
+      layout: "split-header",
+      headerStyle: "split-profile",
+      colorPaletteId: "classic-navy",
+      fontFamilyId: "inter",
+      dividerStyle: "simple",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: true
+    }
+  },
+  {
+    id: "tmpl-14",
+    name: "The Emerald Lineage",
+    category: "Modern",
+    description: "Single column with timeline style divider blocks and emerald-green highlights.",
+    style: {
+      layout: "single-column",
+      headerStyle: "accent-line",
+      colorPaletteId: "emerald-modern",
+      fontFamilyId: "outfit",
+      dividerStyle: "timeline",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+
+  // --- CREATIVE TEMPLATES (7) ---
+  {
+    id: "tmpl-15",
+    name: "The Creative Designer",
+    category: "Creative",
+    description: "Bold sunset orange gradient header, custom badges, and asymmetrical columns to make your design portfolio pop.",
+    style: {
+      layout: "right-sidebar",
+      headerStyle: "bold-banner",
+      colorPaletteId: "sunset-orange",
+      fontFamilyId: "outfit",
+      dividerStyle: "pill-badges",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: true
+    }
+  },
+  {
+    id: "tmpl-16",
+    name: "The Purple Bold Banner",
+    category: "Creative",
+    description: "Royal purple top block banner with large white text name, ideal for content creators, artists, and marketers.",
+    style: {
+      layout: "single-column",
+      headerStyle: "bold-banner",
+      colorPaletteId: "royal-purple",
+      fontFamilyId: "outfit",
+      dividerStyle: "pill-badges",
+      fontSize: "md",
+      spacing: "relaxed",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-17",
+    name: "The Sunset Block",
+    category: "Creative",
+    description: "Two-column right-sidebar with modern accent blocks and sunset colors. Bold and youthful representation.",
+    style: {
+      layout: "right-sidebar",
+      headerStyle: "split-profile",
+      colorPaletteId: "sunset-orange",
+      fontFamilyId: "inter",
+      dividerStyle: "accent-block",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: true
+    }
+  },
+  {
+    id: "tmpl-18",
+    name: "The Teal Innovator",
+    category: "Creative",
+    description: "Three-column grid with custom cyan pills. Dynamic layout for startup employees, growth hackers, and innovators.",
+    style: {
+      layout: "three-column",
+      headerStyle: "split-profile",
+      colorPaletteId: "teal-clean",
+      fontFamilyId: "outfit",
+      dividerStyle: "pill-badges",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "narrow",
+      showAvatars: true
+    }
+  },
+  {
+    id: "tmpl-19",
+    name: "The Neon Noir",
+    category: "Creative",
+    description: "A dark theme layout containing rich dark background panels, sky-blue neon text details, and rounded shapes.",
+    style: {
+      layout: "left-sidebar",
+      headerStyle: "bold-banner",
+      colorPaletteId: "dark-noir",
+      fontFamilyId: "outfit",
+      dividerStyle: "pill-badges",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-20",
+    name: "The Rose Artisan",
+    category: "Creative",
+    description: "Single column with elegant rose text dividers, centered header, and spacious margins. Fits gallery coordinators and brand leads.",
+    style: {
+      layout: "single-column",
+      headerStyle: "minimalist",
+      colorPaletteId: "warm-burgundy",
+      fontFamilyId: "playfair",
+      dividerStyle: "pill-badges",
+      fontSize: "md",
+      spacing: "relaxed",
+      margins: "wide",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-21",
+    name: "The Forest Creator",
+    category: "Creative",
+    description: "Two-column layout in warm green tones with profile block. Gives a natural, craft-focused aesthetic.",
+    style: {
+      layout: "left-sidebar",
+      headerStyle: "split-profile",
+      colorPaletteId: "emerald-modern",
+      fontFamilyId: "inter",
+      dividerStyle: "accent-block",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: true
+    }
+  },
+
+  // --- ACADEMIC TEMPLATES (6) ---
+  {
+    id: "tmpl-22",
+    name: "The Scholar",
+    category: "Academic",
+    description: "Strict serif font, compact margins, and extended lists. Classic CV design for research researchers and teachers.",
+    style: {
+      layout: "single-column",
+      headerStyle: "minimalist",
+      colorPaletteId: "monochrome-slate",
+      fontFamilyId: "playfair",
+      dividerStyle: "simple",
+      fontSize: "sm",
+      spacing: "compact",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-23",
+    name: "The Classic CV Researcher",
+    category: "Academic",
+    description: "Double-column serif layout with a narrow right sidebar for publications metadata and contact details.",
+    style: {
+      layout: "right-sidebar",
+      headerStyle: "minimalist",
+      colorPaletteId: "monochrome-slate",
+      fontFamilyId: "playfair",
+      dividerStyle: "simple",
+      fontSize: "sm",
+      spacing: "compact",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-24",
+    name: "The Ivy League Fellow",
+    category: "Academic",
+    description: "Classic serif typography with rich navy headers. Suitable for postdocs, professors, and grant applications.",
+    style: {
+      layout: "single-column",
+      headerStyle: "accent-line",
+      colorPaletteId: "classic-navy",
+      fontFamilyId: "playfair",
+      dividerStyle: "simple",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-25",
+    name: "The Medical Scientist",
+    category: "Academic",
+    description: "Clean layout with subtle emerald highlights. Designed for physicians, clinical trials managers, and labs researchers.",
+    style: {
+      layout: "single-column",
+      headerStyle: "minimalist",
+      colorPaletteId: "emerald-modern",
+      fontFamilyId: "inter",
+      dividerStyle: "simple",
+      fontSize: "sm",
+      spacing: "compact",
+      margins: "narrow",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-26",
+    name: "The Deep Archive Scholar",
+    category: "Academic",
+    description: "Centered name, double accent lines, and generous margins. Best for literature, humanities, and arts PhDs.",
+    style: {
+      layout: "single-column",
+      headerStyle: "accent-line",
+      colorPaletteId: "monochrome-slate",
+      fontFamilyId: "playfair",
+      dividerStyle: "simple",
+      fontSize: "md",
+      spacing: "relaxed",
+      margins: "wide",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-27",
+    name: "The STEM Investigator",
+    category: "Academic",
+    description: "Split header, sans-serif body, but classic academic section divisions. Fits math and engineering faculty.",
+    style: {
+      layout: "split-header",
+      headerStyle: "minimalist",
+      colorPaletteId: "classic-navy",
+      fontFamilyId: "inter",
+      dividerStyle: "simple",
+      fontSize: "sm",
+      spacing: "compact",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+
+  // --- TECHNICAL TEMPLATES (7) ---
+  {
+    id: "tmpl-28",
+    name: "The Silicon Valley Engineer",
+    category: "Technical",
+    description: "Monospace coding font, markdown-style headers, and clean tags. Tailored for engineers, Devops, and Sysadmins.",
+    style: {
+      layout: "single-column",
+      headerStyle: "minimalist",
+      colorPaletteId: "monochrome-slate",
+      fontFamilyId: "fira-code",
+      dividerStyle: "simple",
+      fontSize: "sm",
+      spacing: "compact",
+      margins: "narrow",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-29",
+    name: "The Dark Developer Console",
+    category: "Technical",
+    description: "Featuring a slate-900 dark header card, monospace fonts, and sky-blue variables indicators. Extremely premium tech feel.",
+    style: {
+      layout: "single-column",
+      headerStyle: "bold-banner",
+      colorPaletteId: "dark-noir",
+      fontFamilyId: "fira-code",
+      dividerStyle: "accent-block",
+      fontSize: "sm",
+      spacing: "compact",
+      margins: "narrow",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-30",
+    name: "The DevOps Operator",
+    category: "Technical",
+    description: "Two-column left-sidebar layout with monochrome-slate and Fira Code fonts. High packing efficiency for cloud tools.",
+    style: {
+      layout: "left-sidebar",
+      headerStyle: "minimalist",
+      colorPaletteId: "monochrome-slate",
+      fontFamilyId: "fira-code",
+      dividerStyle: "accent-block",
+      fontSize: "sm",
+      spacing: "compact",
+      margins: "narrow",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-31",
+    name: "The Data Scientist Grid",
+    category: "Technical",
+    description: "Left sidebar dark-noir theme, with clean monospace coding tags. Excellent for displaying mathematical models and python packages.",
+    style: {
+      layout: "left-sidebar",
+      headerStyle: "split-profile",
+      colorPaletteId: "dark-noir",
+      fontFamilyId: "fira-code",
+      dividerStyle: "pill-badges",
+      fontSize: "sm",
+      spacing: "compact",
+      margins: "narrow",
+      showAvatars: true
+    }
+  },
+  {
+    id: "tmpl-32",
+    name: "The Web Artisan Teal",
+    category: "Technical",
+    description: "Ocean teal highlights on single-column monospace framework structure. Perfect for frontend devs and javascript architects.",
+    style: {
+      layout: "single-column",
+      headerStyle: "accent-line",
+      colorPaletteId: "teal-clean",
+      fontFamilyId: "fira-code",
+      dividerStyle: "pill-badges",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-33",
+    name: "The Cybersecurity Matrix",
+    category: "Technical",
+    description: "Monochrome slate with timeline dividers. Highlights security audits, bug bounties, and cryptography projects.",
+    style: {
+      layout: "single-column",
+      headerStyle: "minimalist",
+      colorPaletteId: "monochrome-slate",
+      fontFamilyId: "fira-code",
+      dividerStyle: "timeline",
+      fontSize: "sm",
+      spacing: "compact",
+      margins: "narrow",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-34",
+    name: "The Deep Tech Lead",
+    category: "Technical",
+    description: "Split-header layout combining sans-serif headings with monospace bullet points. Ideal for engineering leads and PMs.",
+    style: {
+      layout: "split-header",
+      headerStyle: "minimalist",
+      colorPaletteId: "classic-navy",
+      fontFamilyId: "fira-code",
+      dividerStyle: "simple",
+      fontSize: "sm",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+
+  // --- MINIMALIST TEMPLATES (6) ---
+  {
+    id: "tmpl-35",
+    name: "The Zen Minimalist",
+    category: "Minimalist",
+    description: "Extreme focus on margins, whitespace, and bare typography. Simple grey headings. Perfect for designers and copywriters.",
+    style: {
+      layout: "single-column",
+      headerStyle: "minimalist",
+      colorPaletteId: "monochrome-slate",
+      fontFamilyId: "inter",
+      dividerStyle: "simple",
+      fontSize: "md",
+      spacing: "relaxed",
+      margins: "wide",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-36",
+    name: "The Clean Sheet",
+    category: "Minimalist",
+    description: "A compact single-column sheet that fits an entire career onto exactly one page with a simple bottom divider accent.",
+    style: {
+      layout: "single-column",
+      headerStyle: "minimalist",
+      colorPaletteId: "monochrome-slate",
+      fontFamilyId: "inter",
+      dividerStyle: "accent-block",
+      fontSize: "sm",
+      spacing: "compact",
+      margins: "narrow",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-37",
+    name: "The Minimalist Sidebar",
+    category: "Minimalist",
+    description: "Two-column layout in black and white with no backgrounds. High spacing efficiency and a structured presentation.",
+    style: {
+      layout: "left-sidebar",
+      headerStyle: "minimalist",
+      colorPaletteId: "monochrome-slate",
+      fontFamilyId: "inter",
+      dividerStyle: "simple",
+      fontSize: "sm",
+      spacing: "compact",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-38",
+    name: "The Geometry Dot",
+    category: "Minimalist",
+    description: "Delicate dots and thin lines in outfit geometric sans font. Elegant modern minimalism.",
+    style: {
+      layout: "single-column",
+      headerStyle: "minimalist",
+      colorPaletteId: "teal-clean",
+      fontFamilyId: "outfit",
+      dividerStyle: "simple",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-39",
+    name: "The Classic Slate Sheet",
+    category: "Minimalist",
+    description: "Centered heading with clean standard sans-serif layout. Standard corporate look done with premium spacing.",
+    style: {
+      layout: "single-column",
+      headerStyle: "accent-line",
+      colorPaletteId: "monochrome-slate",
+      fontFamilyId: "inter",
+      dividerStyle: "simple",
+      fontSize: "md",
+      spacing: "normal",
+      margins: "normal",
+      showAvatars: false
+    }
+  },
+  {
+    id: "tmpl-40",
+    name: "The Elegant Minimalist",
+    category: "Minimalist",
+    description: "Double accent lines, elegant serif headlines, and spacious margins. Exudes subtle premium class.",
+    style: {
+      layout: "single-column",
+      headerStyle: "accent-line",
+      colorPaletteId: "monochrome-slate",
+      fontFamilyId: "playfair",
+      dividerStyle: "simple",
+      fontSize: "md",
+      spacing: "relaxed",
+      margins: "wide",
+      showAvatars: false
+    }
+  }
+];
+
+
+================================================================================
+FILE: src/index.css
+================================================================================
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #0b0f19;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+
+================================================================================
+FILE: src/main.tsx
+================================================================================
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.tsx'
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+
+
+================================================================================
+FILE: src/styles/App.css
+================================================================================
+/* Google Fonts Imports */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&family=Merriweather:wght@300;400;700&display=swap');
+
+/* Font Variables Map */
+.font-sans { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+.font-serif { font-family: 'Playfair Display', 'Merriweather', Georgia, serif; }
+.font-mono { font-family: 'Fira Code', 'Courier New', Courier, monospace; }
+.font-outfit { font-family: 'Outfit', sans-serif; }
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Core Design System Reset & Base Styles */
+:root {
+  --app-bg: #0b0f19;
+  --panel-bg: rgba(17, 24, 39, 0.85);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --panel-accent: #2563eb;
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --input-bg: rgba(15, 23, 42, 0.6);
+  --input-border: rgba(255, 255, 255, 0.1);
+  --input-focus: #3b82f6;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--app-bg);
+  color: var(--text-main);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* App Layout Grid */
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: radial-gradient(circle at 10% 20%, rgba(17, 24, 39, 1) 0%, rgba(10, 15, 30, 1) 90%);
+}
+
+/* Control Panel Sidebar (Left) */
+.sidebar-panel {
+  width: 480px;
+  min-width: 420px;
+  height: 100%;
+  background: var(--panel-bg);
+  backdrop-filter: blur(12px);
+  border-right: 1px solid var(--panel-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+/* App Top Navigation (Brand & Actions) */
+.nav-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--panel-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brand-icon {
+  color: #3b82f6;
+}
+
+.brand h1 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border);
+  color: var(--text-main);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-icon {
+  padding: 0.4rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--panel-border);
+}
+
+.btn-icon:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-icon.active {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: #3b82f6;
+  color: #60a5fa;
+}
+
+/* Tabs Navigation for panels */
+.panel-tabs {
+  display: flex;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  color: var(--text-main);
+}
+
+.tab-btn.active {
+  color: #60a5fa;
+  border-bottom-color: #3b82f6;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Panel Content Scroll Container */
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+/* Accordion Component */
+.accordion-item {
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.accordion-header {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: none;
+  cursor: pointer;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.accordion-header:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.accordion-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text-main);
+}
+
+.accordion-header-left svg {
+  color: #3b82f6;
+}
+
+.accordion-content {
+  padding: 1rem;
+  border-top: 1px solid var(--panel-border);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+/* Form Controls */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-main);
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+textarea.form-input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Form List Add/Remove Items UI */
+.list-item-card {
+  border: 1px solid var(--panel-border);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.list-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.list-item-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
+}
+
+.list-item-actions {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.list-item-btn {
+  padding: 0.25rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+
+.list-item-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+}
+
+.list-item-btn.btn-delete:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.btn-add {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px dashed var(--panel-border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  transition: all 0.2s;
+}
+
+.btn-add:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.02);
+  border-color: var(--input-focus);
+}
+
+/* Template Browser Panel */
+.templates-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.category-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.filter-badge {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-badge:hover, .filter-badge.active {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: #3b82f6;
+  color: #60a5fa;
+}
+
+.template-card {
+  border: 1px solid var(--panel-border);
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 8px;
+  padding: 0.6rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.template-card:hover {
+  transform: translateY(-2px);
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.template-card.active {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.template-preview-mock {
+  height: 90px;
+  background: #1e293b;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  padding: 0.4rem;
+  gap: 0.25rem;
+  opacity: 0.8;
+  position: relative;
+}
+
+.template-preview-mock::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg, transparent 70%, rgba(15, 23, 42, 0.6));
+}
+
+.template-preview-header {
+  height: 10px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 2px;
+  width: 60%;
+}
+
+.template-preview-row {
+  display: flex;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.template-preview-left {
+  width: 30%;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
+}
+
+.template-preview-right {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+}
+
+.template-card.active .template-preview-header {
+  background: var(--input-focus);
+}
+
+.template-card-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-main);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.template-card-tag {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+/* Customizer Selection Grids */
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.customizer-section-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 1.25rem 0 0.5rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.customizer-section-title:first-of-type {
+  margin-top: 0;
+}
+
+.color-option-btn {
+  width: 100%;
+  height: 38px;
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #111;
+  transition: all 0.2s;
+}
+
+.color-option-btn:hover {
+  transform: scale(1.05);
+  border-color: #fff;
+}
+
+.color-option-btn.active {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.color-option-split {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  display: flex;
+}
+
+.color-option-bar {
+  flex: 1;
+  height: 100%;
+}
+
+.font-option-btn {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+  background: var(--input-bg);
+  color: var(--text-main);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.font-option-btn:hover {
+  border-color: var(--text-muted);
+}
+
+.font-option-btn.active {
+  border-color: #3b82f6;
+  color: #60a5fa;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.toggle-group {
+  display: flex;
+  gap: 0.25rem;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.2rem;
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+
+.toggle-btn:hover {
+  color: var(--text-main);
+}
+
+.toggle-btn.active {
+  background: #3b82f6;
+  color: white;
+}
+
+/* Avatar upload input helper */
+.avatar-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.avatar-preview-circle {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 2px solid var(--panel-border);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-preview-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* PREVIEW CANVAS WRAPPER (Right) */
+.preview-canvas-container {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  box-sizing: border-box;
+  background: #111827;
+  position: relative;
+}
+
+/* Live Paper Page (A4 Size Constraint) */
+.resume-page {
+  width: 794px; /* A4 Width in px at 96 DPI */
+  min-height: 1123px; /* A4 Height in px at 96 DPI */
+  background-color: var(--bg-color, #ffffff);
+  color: var(--text-color, #1f2937);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  padding: var(--page-padding, 2.5rem);
+  box-sizing: border-box;
+  position: relative;
+  transition: padding 0.2s ease;
+  font-size: var(--font-size, 14px);
+  line-height: var(--line-height, 1.5);
+}
+
+.resume-page * {
+  box-sizing: border-box;
+}
+
+/* Content Editable Glow Hint */
+.editable-element {
+  outline: none;
+  border-radius: 2px;
+  transition: all 0.2s;
+  cursor: text;
+  position: relative;
+}
+
+.editable-element:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+  outline: 1px dashed rgba(59, 130, 246, 0.3);
+}
+
+.editable-element:focus {
+  background-color: rgba(59, 130, 246, 0.08);
+  outline: 1px solid #3b82f6;
+  box-shadow: 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+.editable-element[data-placeholder]:empty::before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Header Styles Layout inside Preview */
+.resume-header {
+  margin-bottom: var(--section-gap, 1.5rem);
+}
+
+/* Minimalist Header */
+.header-minimalist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.header-minimalist .name-title {
+  text-align: center;
+}
+
+.header-minimalist .contact-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1rem;
+  border-top: 1px solid var(--divider-color, #e5e7eb);
+  border-bottom: 1px solid var(--divider-color, #e5e7eb);
+  padding: 0.4rem 0;
+  font-size: 0.85em;
+  margin-top: 0.25rem;
+}
+
+/* Bold Banner Header */
+.header-bold-banner {
+  background-color: var(--banner-bg, var(--primary-color));
+  color: var(--banner-text, #ffffff);
+  padding: 1.5rem;
+  margin: calc(-1 * var(--page-padding)) calc(-1 * var(--page-padding)) var(--section-gap) calc(-1 * var(--page-padding));
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.header-bold-banner .contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.4rem 0.75rem;
+  font-size: 0.85em;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 0.5rem;
+}
+
+.header-bold-banner .editable-element:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  outline-color: rgba(255, 255, 255, 0.3);
+}
+
+.header-bold-banner .editable-element:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  outline-color: #ffffff;
+}
+
+/* Split Profile Header */
+.header-split-profile {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.header-split-profile .avatar-box {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--primary-color);
+  flex-shrink: 0;
+}
+
+.header-split-profile .avatar-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.header-split-profile .header-details {
+  flex: 1;
+}
+
+.header-split-profile .contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 1rem;
+  font-size: 0.85em;
+  margin-top: 0.5rem;
+}
+
+/* Accent Line Header */
+.header-accent-line {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.header-accent-line .header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.header-accent-line .accent-bar {
+  height: 4px;
+  background-color: var(--primary-color);
+  width: 100%;
+  margin: 0.35rem 0 0.5rem 0;
+}
+
+.header-accent-line .contact-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  font-size: 0.85em;
+}
+
+/* Contact Info Item helper */
+.contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.contact-item svg {
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.header-bold-banner .contact-item svg {
+  color: var(--accent-color);
+}
+
+/* Layout Compilers */
+.resume-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-gap, 1.5rem);
+}
+
+/* Two Column Layouts */
+.layout-left-sidebar, .layout-right-sidebar {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1.5rem;
+}
+
+.layout-right-sidebar {
+  grid-template-columns: 1fr 240px;
+}
+
+.resume-sidebar-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-gap, 1.5rem);
+  height: 100%;
+}
+
+.layout-two-column-bg {
+  background-color: var(--sidebar-bg, #f9fafb);
+  margin: 0 0 calc(-1 * var(--page-padding)) calc(-1 * var(--page-padding));
+  padding: 0 0.75rem var(--page-padding) var(--page-padding);
+  border-right: 1px solid var(--divider-color, #e5e7eb);
+  color: var(--sidebar-text, inherit);
+}
+
+.layout-right-sidebar .layout-two-column-bg {
+  margin: 0 calc(-1 * var(--page-padding)) calc(-1 * var(--page-padding)) 0;
+  padding: 0 var(--page-padding) var(--page-padding) 0.75rem;
+  border-right: none;
+  border-left: 1px solid var(--divider-color, #e5e7eb);
+}
+
+.layout-two-column-bg .contact-item svg {
+  color: var(--accent-color);
+}
+
+.resume-main-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-gap, 1.5rem);
+}
+
+/* Three Column Layout */
+.layout-three-column-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.25rem;
+}
+
+/* Section Decorators and Dividers */
+.resume-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-title-wrap {
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+}
+
+.section-title {
+  font-size: 1.15em;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.layout-two-column-bg .section-title {
+  color: var(--sidebar-text);
+  border-bottom-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Divider Styles */
+.divider-simple .section-title-wrap {
+  border-bottom: 1.5px solid var(--divider-color, #e5e7eb);
+  padding-bottom: 0.2rem;
+  width: 100%;
+}
+
+.divider-accent-block .section-title-wrap {
+  border-bottom: 1px solid var(--divider-color, #e5e7eb);
+  padding-bottom: 0.2rem;
+  width: 100%;
+  position: relative;
+}
+
+.divider-accent-block .section-title-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0;
+  width: 40px; height: 3px;
+  background-color: var(--primary-color);
+}
+
+.divider-pill-badges .section-title-wrap {
+  width: 100%;
+}
+
+.divider-pill-badges .section-title {
+  background-color: rgba(59, 130, 246, 0.08);
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+  border-left: 3px solid var(--primary-color);
+}
+
+/* List Item Formatting inside Resume */
+.section-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.resume-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.resume-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: 700;
+}
+
+.resume-item-org {
+  color: var(--primary-color);
+}
+
+.layout-two-column-bg .resume-item-org {
+  color: var(--sidebar-text);
+}
+
+.resume-item-sub {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-style: italic;
+  font-size: 0.9em;
+  color: var(--secondary-color);
+}
+
+.layout-two-column-bg .resume-item-sub {
+  color: var(--sidebar-text);
+  opacity: 0.8;
+}
+
+.resume-item-desc {
+  font-size: 0.9em;
+  white-space: pre-line;
+  margin-top: 0.25rem;
+  color: var(--text-color);
+}
+
+.layout-two-column-bg .resume-item-desc {
+  color: var(--sidebar-text);
+  opacity: 0.9;
+}
+
+/* Skills list rendering style */
+.skills-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+}
+
+.skill-tag {
+  font-size: 0.85em;
+  background-color: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.12);
+  color: var(--text-color);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+.layout-two-column-bg .skill-tag {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--sidebar-text);
+}
+
+.divider-pill-badges .skill-tag {
+  border-radius: 12px;
+  background-color: rgba(var(--primary-rgb, 59, 130, 246), 0.08);
+}
+
+/* Timeline specific layouts */
+.divider-timeline .section-list {
+  border-left: 2px dashed var(--divider-color, #e5e7eb);
+  padding-left: 1rem;
+  margin-left: 0.5rem;
+}
+
+.divider-timeline .resume-item {
+  position: relative;
+}
+
+.divider-timeline .resume-item::before {
+  content: '';
+  position: absolute;
+  left: calc(-1rem - 6px - 1px);
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  border: 2px solid var(--bg-color, #ffffff);
+}
+
+/* Print Guide Overlay UI */
+.print-helper-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #1f2937;
+  border: 1px solid var(--panel-border);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  max-width: 480px;
+  width: 90%;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 99;
+}
+
+/* High Fidelity Browser Print Core Rules */
+@media print {
+  /* Remove UI decorations completely */
+  .sidebar-panel,
+  .print-helper-modal,
+  .modal-backdrop,
+  .btn-floating,
+  .no-print {
+    display: none !important;
+  }
+
+  body, html {
+    background: #ffffff !important;
+    color: #000000 !important;
+    height: auto !important;
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .app-container {
+    display: block !important;
+    height: auto !important;
+    width: 100% !important;
+    overflow: visible !important;
+    background: none !important;
+  }
+
+  .preview-canvas-container {
+    display: block !important;
+    background: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .resume-page {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: var(--page-padding, 2.5rem) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  /* Force print background graphics */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}
+
+
+================================================================================
+FILE: src/types/resume.ts
+================================================================================
+export interface PersonalInfo {
+  name: string;
+  title: string;
+  email: string;
+  phone: string;
+  location: string;
+  website: string;
+  linkedin: string;
+  github: string;
+  avatar: string; // Base64 dataURL or image URL
+  summary: string;
+}
+
+export interface WorkExperience {
+  id: string;
+  company: string;
+  position: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  current: boolean;
+  description: string; // Bullet points or text description
+}
+
+export interface Education {
+  id: string;
+  institution: string;
+  degree: string;
+  fieldOfStudy: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  gpa: string;
+  description: string;
+}
+
+export interface Project {
+  id: string;
+  name: string;
+  description: string;
+  technologies: string[];
+  link: string;
+  role: string;
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+  level: string; // e.g. "Beginner", "Intermediate", "Advanced", "Expert", or ""
+  category: string; // e.g. "Languages", "Frameworks", "Design"
+}
+
+export interface Language {
+  id: string;
+  name: string;
+  proficiency: string; // e.g. "Native", "Fluent", "Conversational", "Basic"
+}
+
+export interface Certification {
+  id: string;
+  name: string;
+  issuer: string;
+  date: string;
+  link: string;
+}
+
+export interface CustomSectionItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  date: string;
+  description: string;
+}
+
+export interface CustomSection {
+  id: string;
+  title: string;
+  items: CustomSectionItem[];
+}
+
+export interface ResumeData {
+  personalInfo: PersonalInfo;
+  workExperience: WorkExperience[];
+  education: Education[];
+  projects: Project[];
+  skills: Skill[];
+  languages: Language[];
+  certifications: Certification[];
+  customSections: CustomSection[];
+}
+
+export type LayoutType = 'single-column' | 'left-sidebar' | 'right-sidebar' | 'split-header' | 'three-column';
+export type HeaderStyle = 'minimalist' | 'bold-banner' | 'split-profile' | 'accent-line';
+export type DividerStyle = 'simple' | 'accent-block' | 'pill-badges' | 'timeline';
+export type FontSize = 'sm' | 'md' | 'lg';
+export type SpacingSize = 'compact' | 'normal' | 'relaxed';
+export type MarginSize = 'narrow' | 'normal' | 'wide';
+
+export interface ColorPalette {
+  id: string;
+  name: string;
+  primary: string; // e.g. hex or hsl
+  secondary: string;
+  accent: string;
+  text: string;
+  background: string;
+  sidebarBg?: string; // used for two-column layouts
+  sidebarText?: string;
+  bannerBg?: string; // used for bold banner header
+  bannerText?: string;
+}
+
+export interface FontFamily {
+  id: string;
+  name: string;
+  class: string; // css class name or font-family string
+  importUrl?: string; // google fonts import url if needed
+}
+
+export interface ResumeStyle {
+  layout: LayoutType;
+  headerStyle: HeaderStyle;
+  colorPaletteId: string;
+  fontFamilyId: string;
+  dividerStyle: DividerStyle;
+  fontSize: FontSize;
+  spacing: SpacingSize;
+  margins: MarginSize;
+  showAvatars: boolean;
+}
+
+export interface ResumeTemplate {
+  id: string;
+  name: string;
+  category: 'Modern' | 'Creative' | 'Professional' | 'Academic' | 'Technical' | 'Minimalist';
+  description: string;
+  style: ResumeStyle;
+}
+
+
